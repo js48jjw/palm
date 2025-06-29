@@ -117,17 +117,14 @@ export default function Home() {
   };
 
   const resetApp = () => {
-    setGender('');
-    setAge('');
+    setGender(gender);
+    setAge(age);
     setSelectedImage(null);
     setImagePreview('');
     setAnalysisResult(null);
     setCurrentStep('input');
     setIsUploading(false);
     setIsAnalyzing(false);
-    // localStorage에서도 제거
-    window.localStorage.removeItem('gender');
-    window.localStorage.removeItem('age');
   };
 
   const isFormValid = gender && age && selectedImage && !isUploading;

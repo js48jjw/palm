@@ -41,42 +41,52 @@ export const AgeInput: React.FC<AgeInputProps> = ({
   };
 
   return (
-    <div className={className}>
-      <Input
-        type="number"
-        label="나이를 입력해주세요"
-        placeholder="예: 25"
-        value={value}
-        onChange={handleChange}
-        error={error}
-        helperText="정확한 나이를 입력하시면 더 정밀한 분석이 가능합니다"
-        min="1"
-        max="120"
-        onKeyDown={(e) => {
-          if (
-            e.key === 'Enter' ||
-            e.key === 'Done' ||
-            e.key === 'Go' ||
-            e.key === 'Next' ||
-            e.key === 'Tab'
-          ) {
-            (e.target as HTMLInputElement).blur();
-          }
-        }}
-      />
-      
-      {value && !error && (
-        <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-          <div className="flex items-center">
-            <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span className="text-green-700 dark:text-green-300 text-sm">
-              {value}세로 설정되었습니다
-            </span>
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        const input = e.currentTarget.querySelector('input');
+        if (input) setTimeout(() => input.blur(), 0);
+      }}
+      autoComplete="off"
+    >
+      <div className={className}>
+        <Input
+          type="number"
+          label="나이를 입력해주세요"
+          placeholder="예: 25"
+          value={value}
+          onChange={handleChange}
+          error={error}
+          helperText="정확한 나이를 입력하시면 더 정밀한 분석이 가능합니다"
+          min="1"
+          max="120"
+          inputMode="numeric"
+          enterKeyHint="done"
+          onKeyDown={(e) => {
+            if (
+              e.key === 'Enter' ||
+              e.key === 'Done' ||
+              e.key === 'Go' ||
+              e.key === 'Next' ||
+              e.key === 'Tab'
+            ) {
+              setTimeout(() => (e.target as HTMLInputElement).blur(), 0);
+            }
+          }}
+        />
+        {value && !error && (
+          <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-green-700 dark:text-green-300 text-sm">
+                {value}세로 설정되었습니다
+              </span>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </form>
   );
 };
