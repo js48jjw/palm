@@ -44,8 +44,8 @@ function resizeImage(file: File, maxWidth = 1600, maxHeight = 1600, quality = 0.
   });
 }
 
-// 반복적으로 리사이즈/압축하여 3MB 이하로 만드는 함수
-async function resizeImageToMaxSize(file: File, maxSize = 3 * 1024 * 1024) {
+// 반복적으로 리사이즈/압축하여 2.5MB 이하로 만드는 함수
+async function resizeImageToMaxSize(file: File, maxSize = 2.5 * 1024 * 1024) {
   let quality = 0.8;
   let maxWidth = 1600;
   let maxHeight = 1600;
@@ -138,14 +138,14 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       return;
     }
 
-    // 3.0MB 초과 시 반복적으로 리사이즈 및 압축
-    if (file.size > 3 * 1024 * 1024) {
+    // 2.5MB 초과 시 반복적으로 리사이즈 및 압축
+    if (file.size > 2.5 * 1024 * 1024) {
       try {
-        const blob = await resizeImageToMaxSize(file, 3 * 1024 * 1024);
+        const blob = await resizeImageToMaxSize(file, 2.5 * 1024 * 1024);
         const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
         console.log('최종 파일 크기:', resizedFile.size);
-        if (resizedFile.size > 3 * 1024 * 1024) {
-          setError('이미지 크기를 3MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
+        if (resizedFile.size > 2.5 * 1024 * 1024) {
+          setError('이미지 크기를 2.5MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
           return;
         }
         onImageSelect(resizedFile);
@@ -153,8 +153,8 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
         setError('이미지 크기 축소에 실패했습니다.');
       }
     } else {
-      if (file.size > 3 * 1024 * 1024) {
-        setError('이미지 크기가 3MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
+      if (file.size > 2.5 * 1024 * 1024) {
+        setError('이미지 크기가 2.5MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
         return;
       }
       onImageSelect(file);
