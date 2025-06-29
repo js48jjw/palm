@@ -142,16 +142,21 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
     if (file.size > 3 * 1024 * 1024) {
       try {
         const blob = await resizeImageToMaxSize(file, 3 * 1024 * 1024);
-        if (blob.size > 3 * 1024 * 1024) {
+        const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+        console.log('최종 파일 크기:', resizedFile.size);
+        if (resizedFile.size > 3 * 1024 * 1024) {
           setError('이미지 크기를 3MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
           return;
         }
-        const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
         onImageSelect(resizedFile);
       } catch (err) {
         setError('이미지 크기 축소에 실패했습니다.');
       }
     } else {
+      if (file.size > 3 * 1024 * 1024) {
+        setError('이미지 크기가 3MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
+        return;
+      }
       onImageSelect(file);
     }
   };
