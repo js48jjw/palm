@@ -89,18 +89,6 @@ export const FortuneResult: React.FC<FortuneResultProps> = ({
 
   return (
     <div className={cn('w-full max-w-4xl mx-auto', className)}>
-      {/* 결과화면에서만 보이는 상단 광고 */}
-      <div style={{ display: 'flex', justifyContent: 'center', width: '320px', maxWidth: '100%', margin: '0 auto', marginBottom: '1rem' }}>
-        <ins
-          className="kakao_ad_area"
-          style={{ display: 'block', width: '100%' }}
-          data-ad-unit="DAN-Xz4xE25ZdJKQpK76"
-          data-ad-width="320"
-          data-ad-height="50"
-          data-ad-onfail="adfitTopOnFail"
-        ></ins>
-      </div>
-
       {/* 헤더 */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full mb-4">
@@ -168,18 +156,6 @@ export const FortuneResult: React.FC<FortuneResultProps> = ({
             ✨ 오늘 하루 좋은 일이 가득하시길 바랍니다!
           </span>
         </div>
-      </div>
-
-      {/* 결과화면에서만 보이는 하단 광고 */}
-      <div style={{ display: 'flex', justifyContent: 'center', width: '320px', maxWidth: '100%', margin: '2rem auto 0 auto' }}>
-        <ins
-          className="kakao_ad_area"
-          style={{ display: 'block', width: '100%' }}
-          data-ad-unit="DAN-lYOfiVolJOlJuE3a"
-          data-ad-width="320"
-          data-ad-height="50"
-          data-ad-onfail="adfitBottomOnFail"
-        ></ins>
       </div>
     </div>
   );

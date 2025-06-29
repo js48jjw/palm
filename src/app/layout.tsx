@@ -44,7 +44,6 @@ export default function RootLayout({
           width: '320px',
           maxWidth: '100%',
           zIndex: 99999,
-          pointerEvents: 'none',
         }}>
           <ins
             className="kakao_ad_area"
@@ -85,7 +84,6 @@ export default function RootLayout({
                 topDiv.style.width = '320px';
                 topDiv.style.maxWidth = '100%';
                 topDiv.style.zIndex = '99999';
-                topDiv.style.pointerEvents = 'none';
                 var ins = document.createElement('ins');
                 ins.className = 'kakao_ad_area';
                 ins.style.display = 'block';
@@ -108,7 +106,6 @@ export default function RootLayout({
                 bottomDiv.style.width = '320px';
                 bottomDiv.style.maxWidth = '100%';
                 bottomDiv.style.zIndex = '99999';
-                bottomDiv.style.pointerEvents = 'none';
                 var ins2 = document.createElement('ins');
                 ins2.className = 'kakao_ad_area';
                 ins2.style.display = 'block';
@@ -139,7 +136,6 @@ export default function RootLayout({
           width: '320px',
           maxWidth: '100%',
           zIndex: 99999,
-          pointerEvents: 'none',
         }}>
           <ins
             className="kakao_ad_area"
