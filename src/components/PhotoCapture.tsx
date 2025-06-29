@@ -44,6 +44,26 @@ function resizeImage(file: File, maxWidth = 1600, maxHeight = 1600, quality = 0.
   });
 }
 
+// 반복적으로 리사이즈/압축하여 3MB 이하로 만드는 함수
+async function resizeImageToMaxSize(file: File, maxSize = 3 * 1024 * 1024) {
+  let quality = 0.8;
+  let maxWidth = 1600;
+  let maxHeight = 1600;
+  let blob = await resizeImage(file, maxWidth, maxHeight, quality);
+  let tryCount = 0;
+  while (blob.size > maxSize && tryCount < 5) {
+    quality -= 0.2;
+    if (quality < 0.3) {
+      quality = 0.3;
+      maxWidth = Math.floor(maxWidth * 0.8);
+      maxHeight = Math.floor(maxHeight * 0.8);
+    }
+    blob = await resizeImage(file, maxWidth, maxHeight, quality);
+    tryCount++;
+  }
+  return blob;
+}
+
 export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   onImageSelect,
   uploading,
@@ -118,10 +138,14 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       return;
     }
 
-    // 3.5MB 초과 시 리사이즈 및 압축
-    if (file.size > 3.5 * 1024 * 1024) {
+    // 3.0MB 초과 시 반복적으로 리사이즈 및 압축
+    if (file.size > 3 * 1024 * 1024) {
       try {
-        const blob = await resizeImage(file, 1600, 1600, 0.8); // 해상도/품질 조정 가능
+        const blob = await resizeImageToMaxSize(file, 3 * 1024 * 1024);
+        if (blob.size > 3 * 1024 * 1024) {
+          setError('이미지 크기를 3MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
+          return;
+        }
         const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
         onImageSelect(resizedFile);
       } catch (err) {
