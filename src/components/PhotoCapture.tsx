@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import Image from 'next/image';
 import { Button } from './ui/Button';
 import { cn, isValidImageFile, createImagePreview, fileToBase64 } from '@/lib/utils';
 import { Camera, Upload, X, RotateCcw } from 'lucide-react';
@@ -295,10 +296,14 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       {imagePreview && !uploading && (
         <div className="space-y-4">
           <div className="relative group">
-            <img
+            <Image
               src={imagePreview}
               alt="Palm preview"
+              width={640}
+              height={256}
               className="w-full h-64 object-cover rounded-2xl border-2 border-gray-200 dark:border-gray-700"
+              style={{ objectFit: 'cover' }}
+              unoptimized
             />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-2xl" />
             <Button
