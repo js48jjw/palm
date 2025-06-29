@@ -52,6 +52,17 @@ export const AgeInput: React.FC<AgeInputProps> = ({
         helperText="정확한 나이를 입력하시면 더 정밀한 분석이 가능합니다"
         min="1"
         max="120"
+        onKeyDown={(e) => {
+          if (
+            e.key === 'Enter' ||
+            e.key === 'Done' ||
+            e.key === 'Go' ||
+            e.key === 'Next' ||
+            e.key === 'Tab'
+          ) {
+            (e.target as HTMLInputElement).blur();
+          }
+        }}
       />
       
       {value && !error && (

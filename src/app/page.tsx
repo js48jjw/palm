@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Camera, Upload, Sparkles, RotateCcw, User, Calendar, Loader2 } from 'lucide-react';
 import { GenderSelector } from "../components/GenderSelector";
@@ -16,8 +16,22 @@ interface AnalysisResult {
 }
 
 export default function Home() {
-  const [gender, setGender] = useState<'male' | 'female' | ''>('');
-  const [age, setAge] = useState<string>('');
+  // localStorage에서 gender/age 불러오기
+  const getInitialGender = () => {
+    if (typeof window === 'undefined') return '';
+    const stored = window.localStorage.getItem('gender');
+    if (!stored) return '';
+    try { return JSON.parse(stored); } catch { return ''; }
+  };
+  const getInitialAge = () => {
+    if (typeof window === 'undefined') return '';
+    const stored = window.localStorage.getItem('age');
+    if (!stored) return '';
+    try { return JSON.parse(stored); } catch { return ''; }
+  };
+
+  const [gender, setGender] = useState<'male' | 'female' | ''>(getInitialGender());
+  const [age, setAge] = useState<string>(getInitialAge());
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
@@ -27,6 +41,14 @@ export default function Home() {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  // gender/age 변경 시 localStorage에 저장
+  useEffect(() => {
+    if (gender) window.localStorage.setItem('gender', JSON.stringify(gender));
+  }, [gender]);
+  useEffect(() => {
+    if (age !== '') window.localStorage.setItem('age', JSON.stringify(age));
+  }, [age]);
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -103,6 +125,9 @@ export default function Home() {
     setCurrentStep('input');
     setIsUploading(false);
     setIsAnalyzing(false);
+    // localStorage에서도 제거
+    window.localStorage.removeItem('gender');
+    window.localStorage.removeItem('age');
   };
 
   const isFormValid = gender && age && selectedImage && !isUploading;
