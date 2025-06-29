@@ -1,14 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
-};
-
 export async function POST(request: NextRequest) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -25,6 +17,13 @@ export async function POST(request: NextRequest) {
     if (!image || !gender || !age) {
       return NextResponse.json(
         { error: '필수 정보가 누락되었습니다.' },
+        { status: 400 }
+      );
+    }
+
+    if (image.size > 4 * 1024 * 1024) { // 4MB
+      return NextResponse.json(
+        { error: '4MB 이하의 이미지만 업로드할 수 있습니다.' },
         { status: 400 }
       );
     }
