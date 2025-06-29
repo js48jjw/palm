@@ -118,8 +118,8 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       return;
     }
 
-    // 4MB 초과 시 리사이즈 및 압축
-    if (file.size > 4 * 1024 * 1024) {
+    // 3.5MB 초과 시 리사이즈 및 압축
+    if (file.size > 3.5 * 1024 * 1024) {
       try {
         const blob = await resizeImage(file, 1600, 1600, 0.8); // 해상도/품질 조정 가능
         const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
