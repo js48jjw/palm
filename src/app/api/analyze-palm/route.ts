@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
+};
+
 export async function POST(request: NextRequest) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
