@@ -41,8 +41,8 @@ export default function RootLayout({
           top: 0,
           left: '50%',
           transform: 'translateX(-50%)',
-          width: '100vw',
-          maxWidth: '100vw',
+          width: '320px',
+          maxWidth: '100%',
           zIndex: 99999,
           pointerEvents: 'none',
         }}>
@@ -82,8 +82,8 @@ export default function RootLayout({
                 topDiv.style.top = '0';
                 topDiv.style.left = '50%';
                 topDiv.style.transform = 'translateX(-50%)';
-                topDiv.style.width = '100vw';
-                topDiv.style.maxWidth = '100vw';
+                topDiv.style.width = '320px';
+                topDiv.style.maxWidth = '100%';
                 topDiv.style.zIndex = '99999';
                 topDiv.style.pointerEvents = 'none';
                 var ins = document.createElement('ins');
@@ -105,8 +105,8 @@ export default function RootLayout({
                 bottomDiv.style.left = '50%';
                 bottomDiv.style.bottom = '0';
                 bottomDiv.style.transform = 'translateX(-50%)';
-                bottomDiv.style.width = '100vw';
-                bottomDiv.style.maxWidth = '100vw';
+                bottomDiv.style.width = '320px';
+                bottomDiv.style.maxWidth = '100%';
                 bottomDiv.style.zIndex = '99999';
                 bottomDiv.style.pointerEvents = 'none';
                 var ins2 = document.createElement('ins');
@@ -136,8 +136,8 @@ export default function RootLayout({
           left: '50%',
           bottom: 0,
           transform: 'translateX(-50%)',
-          width: '100vw',
-          maxWidth: '100vw',
+          width: '320px',
+          maxWidth: '100%',
           zIndex: 99999,
           pointerEvents: 'none',
         }}>
