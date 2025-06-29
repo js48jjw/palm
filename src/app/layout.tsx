@@ -41,9 +41,9 @@ export default function RootLayout({
           top: 0,
           left: '50%',
           transform: 'translateX(-50%)',
-          width: '100%',
-          maxWidth: '28rem',
-          zIndex: 50,
+          width: '100vw',
+          maxWidth: '100vw',
+          zIndex: 9999,
         }}>
           <ins
             className="kakao_ad_area"
@@ -71,6 +71,53 @@ export default function RootLayout({
                 el.style.display = 'block';
               });
             }, 1000);
+            // 광고 DOM이 사라지면 자동으로 다시 삽입
+            setInterval(function() {
+              if (!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-Xz4xE25ZdJKQpK76"]')) {
+                var topDiv = document.createElement('div');
+                topDiv.style.display = 'flex';
+                topDiv.style.justifyContent = 'center';
+                topDiv.style.position = 'fixed';
+                topDiv.style.top = '0';
+                topDiv.style.left = '50%';
+                topDiv.style.transform = 'translateX(-50%)';
+                topDiv.style.width = '100vw';
+                topDiv.style.maxWidth = '100vw';
+                topDiv.style.zIndex = '9999';
+                var ins = document.createElement('ins');
+                ins.className = 'kakao_ad_area';
+                ins.style.display = 'block';
+                ins.style.width = '100%';
+                ins.setAttribute('data-ad-unit', 'DAN-Xz4xE25ZdJKQpK76');
+                ins.setAttribute('data-ad-width', '320');
+                ins.setAttribute('data-ad-height', '50');
+                ins.setAttribute('data-ad-onfail', 'adfitTopOnFail');
+                topDiv.appendChild(ins);
+                document.body.appendChild(topDiv);
+              }
+              if (!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-lYOfiVolJOlJuE3a"]')) {
+                var bottomDiv = document.createElement('div');
+                bottomDiv.style.display = 'flex';
+                bottomDiv.style.justifyContent = 'center';
+                bottomDiv.style.position = 'fixed';
+                bottomDiv.style.left = '50%';
+                bottomDiv.style.bottom = '0';
+                bottomDiv.style.transform = 'translateX(-50%)';
+                bottomDiv.style.width = '100vw';
+                bottomDiv.style.maxWidth = '100vw';
+                bottomDiv.style.zIndex = '9999';
+                var ins2 = document.createElement('ins');
+                ins2.className = 'kakao_ad_area';
+                ins2.style.display = 'block';
+                ins2.style.width = '100%';
+                ins2.setAttribute('data-ad-unit', 'DAN-lYOfiVolJOlJuE3a');
+                ins2.setAttribute('data-ad-width', '320');
+                ins2.setAttribute('data-ad-height', '50');
+                ins2.setAttribute('data-ad-onfail', 'adfitBottomOnFail');
+                bottomDiv.appendChild(ins2);
+                document.body.appendChild(bottomDiv);
+              }
+            }, 2000);
           `}
         </Script>
         <Script
@@ -86,9 +133,9 @@ export default function RootLayout({
           left: '50%',
           bottom: 0,
           transform: 'translateX(-50%)',
-          width: '100%',
-          maxWidth: '28rem',
-          zIndex: 50,
+          width: '100vw',
+          maxWidth: '100vw',
+          zIndex: 9999,
         }}>
           <ins
             className="kakao_ad_area"
