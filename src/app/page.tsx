@@ -21,7 +21,11 @@ export default function Home() {
     if (typeof window === 'undefined') return '';
     const stored = window.localStorage.getItem('gender');
     if (!stored) return '';
-    try { return JSON.parse(stored); } catch { return ''; }
+    try {
+      const parsed = JSON.parse(stored);
+      if (parsed === 'male' || parsed === 'female') return parsed;
+      return '';
+    } catch { return ''; }
   };
   const getInitialAge = () => {
     if (typeof window === 'undefined') return '';
@@ -44,7 +48,9 @@ export default function Home() {
 
   // gender/age 변경 시 localStorage에 저장
   useEffect(() => {
-    if (gender) window.localStorage.setItem('gender', JSON.stringify(gender));
+    if (gender === 'male' || gender === 'female') {
+      window.localStorage.setItem('gender', JSON.stringify(gender));
+    }
   }, [gender]);
   useEffect(() => {
     if (age !== '') window.localStorage.setItem('age', JSON.stringify(age));
