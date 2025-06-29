@@ -28,6 +28,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#a78bfa" />
+        <style>{`.kakao_ad_area { display: block !important; }`}</style>
       </head>
       <body
         className={`${inter.variable} ${robotoMono.variable} antialiased`}
@@ -46,7 +47,7 @@ export default function RootLayout({
         }}>
           <ins
             className="kakao_ad_area"
-            style={{ display: 'none', width: '100%' }}
+            style={{ display: 'block', width: '100%' }}
             data-ad-unit="DAN-Xz4xE25ZdJKQpK76"
             data-ad-width="320"
             data-ad-height="50"
@@ -64,6 +65,12 @@ export default function RootLayout({
               // 하단 광고 실패 시 동작
               console.log('하단 광고 노출 실패', ins);
             };
+            // 광고가 숨겨지지 않도록 주기적으로 display: block 강제 적용
+            setInterval(function() {
+              document.querySelectorAll('.kakao_ad_area').forEach(function(el) {
+                el.style.display = 'block';
+              });
+            }, 1000);
           `}
         </Script>
         <Script
@@ -85,7 +92,7 @@ export default function RootLayout({
         }}>
           <ins
             className="kakao_ad_area"
-            style={{ display: 'none', width: '100%' }}
+            style={{ display: 'block', width: '100%' }}
             data-ad-unit="DAN-lYOfiVolJOlJuE3a"
             data-ad-width="320"
             data-ad-height="50"
