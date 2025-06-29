@@ -42,6 +42,7 @@ export default function Home() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [currentStep, setCurrentStep] = useState<'input' | 'loading' | 'result'>('input');
+  const [isMounted, setIsMounted] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -55,6 +56,10 @@ export default function Home() {
   useEffect(() => {
     if (age !== '') window.localStorage.setItem('age', JSON.stringify(age));
   }, [age]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -227,26 +232,9 @@ export default function Home() {
               성별 선택
             </label>
             <div className="flex gap-2 md:gap-2">
-              <button
-                onClick={() => setGender('male')}
-                className={`flex-1 py-3 md:py-3 px-4 md:px-5 rounded-xl font-medium transition-all duration-200 ${
-                  gender === 'male'
-                    ? 'bg-blue-500 text-white shadow-lg transform scale-105'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                남성
-              </button>
-              <button
-                onClick={() => setGender('female')}
-                className={`flex-1 py-3 md:py-3 px-4 md:px-5 rounded-xl font-medium transition-all duration-200 ${
-                  gender === 'female'
-                    ? 'bg-pink-500 text-white shadow-lg transform scale-105'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                여성
-              </button>
+              {isMounted && (
+                <GenderSelector value={gender} onChange={setGender} />
+              )}
             </div>
           </div>
 
