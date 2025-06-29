@@ -10,6 +10,40 @@ interface PhotoCaptureProps {
   className?: string;
 }
 
+// 이미지 리사이즈 및 압축 함수 추가
+function resizeImage(file: File, maxWidth = 1600, maxHeight = 1600, quality = 0.8): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.src = e.target?.result as string;
+    };
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxWidth || height > maxHeight) {
+        const scale = Math.min(maxWidth / width, maxHeight / height);
+        width = width * scale;
+        height = height * scale;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('이미지 변환 실패'));
+        },
+        'image/jpeg',
+        quality
+      );
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   onImageSelect,
   uploading,
@@ -84,7 +118,18 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       return;
     }
 
-    onImageSelect(file);
+    // 4MB 초과 시 리사이즈 및 압축
+    if (file.size > 4 * 1024 * 1024) {
+      try {
+        const blob = await resizeImage(file, 1600, 1600, 0.8); // 해상도/품질 조정 가능
+        const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+        onImageSelect(resizedFile);
+      } catch (err) {
+        setError('이미지 크기 축소에 실패했습니다.');
+      }
+    } else {
+      onImageSelect(file);
+    }
   };
 
   const resetImage = () => {
