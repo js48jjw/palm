@@ -136,12 +136,6 @@ export default function Home() {
   if (currentStep === 'result' && analysisResult) {
     return (
       <div className="min-h-screen h-screen flex flex-col justify-between items-center bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-purple-900 dark:via-pink-900 dark:to-yellow-900 p-0">
-        {/* 상단 광고 */}
-        <div className="w-full flex justify-center">
-          <div className="h-[50px] max-w-md w-full bg-gray-200 dark:bg-gray-700 rounded-b-2xl flex items-center justify-center text-gray-500 text-sm">
-            광고 영역(상단)
-          </div>
-        </div>
         <div className="max-w-3xl w-full flex-1 flex flex-col justify-center px-2 sm:px-4 md:px-6 mt-4">
           <div className="text-center mb-8">
             <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-4xl lg:whitespace-nowrap font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
@@ -179,24 +173,12 @@ export default function Home() {
             </button>
           </div>
         </div>
-        {/* 하단 광고 */}
-        <div className="w-full flex justify-center">
-          <div className="h-[50px] max-w-md w-full bg-gray-200 dark:bg-gray-700 rounded-t-2xl flex items-center justify-center text-gray-500 text-sm">
-            광고 영역(하단)
-          </div>
-        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen h-screen flex flex-col justify-between items-center bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-purple-900 dark:via-pink-900 dark:to-yellow-900 p-0">
-      {/* 상단 광고 */}
-      <div className="w-full flex justify-center">
-        <div className="h-[50px] max-w-md w-full bg-gray-200 dark:bg-gray-700 rounded-b-2xl flex items-center justify-center text-gray-500 text-sm">
-          광고 영역(상단)
-        </div>
-      </div>
       <div className="w-full max-w-lg flex flex-col justify-center h-full px-2 sm:px-4 md:px-6">
         {/* Header */}
         <div className="text-center mb-4 pt-6 md:mb-8 md:pt-8">
@@ -353,12 +335,6 @@ export default function Home() {
         {/* Footer */}
         <div className="text-center mt-4 md:mt-8 text-xs md:text-sm text-gray-500 dark:text-gray-400">
           <p>✨ AI가 분석하는 재미있는 손금 운세 ✨</p>
-        </div>
-      </div>
-      {/* 하단 광고 */}
-      <div className="w-full flex justify-center">
-        <div className="h-[50px] max-w-md w-full bg-gray-200 dark:bg-gray-700 rounded-t-2xl flex items-center justify-center text-gray-500 text-sm">
-          광고 영역(하단)
         </div>
       </div>
     </div>

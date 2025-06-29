@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,7 +32,46 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${robotoMono.variable} antialiased`}
       >
+        {/* 카카오 애드핏 광고 상단 */}
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+          <ins
+            className="kakao_ad_area"
+            style={{ display: 'none' }}
+            data-ad-unit="DAN-Xz4xE25ZdJKQpK76"
+            data-ad-width="320"
+            data-ad-height="50"
+            data-ad-onfail="adfitTopOnFail"
+          ></ins>
+        </div>
+        {/* NO-AD 콜백 등록 */}
+        <Script id="adfit-noad-callbacks" strategy="afterInteractive">
+          {`
+            window.adfitTopOnFail = function(ins) {
+              // 상단 광고 실패 시 동작
+              console.log('상단 광고 노출 실패', ins);
+            };
+            window.adfitBottomOnFail = function(ins) {
+              // 하단 광고 실패 시 동작
+              console.log('하단 광고 노출 실패', ins);
+            };
+          `}
+        </Script>
+        <Script
+          src="//t1.daumcdn.net/kas/static/ba.min.js"
+          strategy="afterInteractive"
+        />
         {children}
+        {/* 카카오 애드핏 하단 배너 */}
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+          <ins
+            className="kakao_ad_area"
+            style={{ display: 'none' }}
+            data-ad-unit="DAN-lYOfiVolJOlJuE3a"
+            data-ad-width="320"
+            data-ad-height="50"
+            data-ad-onfail="adfitBottomOnFail"
+          ></ins>
+        </div>
       </body>
     </html>
   );
