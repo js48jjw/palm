@@ -81,8 +81,8 @@ export default function Home() {
     if (!selectedImage || !gender || !age) return;
 
     // 업로드 전 크기 이중 체크
-    if (selectedImage.size > 2.3 * 1024 * 1024) {
-      alert('이미지 크기가 2.3MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
+    if (selectedImage.size > 3.9 * 1024 * 1024) {
+      alert('이미지 크기가 3.9MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
       return;
     }
     const base64Image = await fileToBase64(selectedImage);
