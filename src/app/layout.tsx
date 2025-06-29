@@ -33,10 +33,20 @@ export default function RootLayout({
         className={`${inter.variable} ${robotoMono.variable} antialiased`}
       >
         {/* 카카오 애드핏 광고 상단 */}
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          position: 'fixed',
+          top: 0,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '100%',
+          maxWidth: '28rem',
+          zIndex: 50,
+        }}>
           <ins
             className="kakao_ad_area"
-            style={{ display: 'none' }}
+            style={{ display: 'none', width: '100%' }}
             data-ad-unit="DAN-Xz4xE25ZdJKQpK76"
             data-ad-width="320"
             data-ad-height="50"
@@ -62,10 +72,20 @@ export default function RootLayout({
         />
         {children}
         {/* 카카오 애드핏 하단 배너 */}
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          position: 'fixed',
+          left: '50%',
+          bottom: 0,
+          transform: 'translateX(-50%)',
+          width: '100%',
+          maxWidth: '28rem',
+          zIndex: 50,
+        }}>
           <ins
             className="kakao_ad_area"
-            style={{ display: 'none' }}
+            style={{ display: 'none', width: '100%' }}
             data-ad-unit="DAN-lYOfiVolJOlJuE3a"
             data-ad-width="320"
             data-ad-height="50"
