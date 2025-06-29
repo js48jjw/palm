@@ -14,16 +14,16 @@ export const GenderSelector: React.FC<GenderSelectorProps> = ({
 }) => {
   return (
     <div className={cn('w-full', className)}>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-        성별을 선택해주세요
-      </label>
+      {/* <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+        성별 선택
+      </label> */}
       
       <div className="grid grid-cols-2 gap-4">
         <button
           type="button"
           onClick={() => onChange('male')}
           className={cn(
-            'relative p-6 rounded-2xl border-2 transition-all duration-300',
+            'relative p-2 rounded-2xl border-2 transition-all duration-300',
             'hover:shadow-lg transform hover:-translate-y-1',
             'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
             value === 'male'
@@ -31,9 +31,9 @@ export const GenderSelector: React.FC<GenderSelectorProps> = ({
               : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-500'
           )}
         >
-          <div className="flex flex-col items-center space-y-3">
+          <div className="flex flex-row items-center justify-center gap-1">
             <div className={cn(
-              'w-12 h-12 rounded-full flex items-center justify-center text-2xl',
+              'w-6 h-6 rounded-full flex items-center justify-center text-lg',
               value === 'male'
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
@@ -41,7 +41,7 @@ export const GenderSelector: React.FC<GenderSelectorProps> = ({
               👨
             </div>
             <span className={cn(
-              'font-medium text-lg',
+              'font-medium text-sm',
               value === 'male'
                 ? 'text-blue-700 dark:text-blue-300'
                 : 'text-gray-700 dark:text-gray-300'
@@ -62,7 +62,7 @@ export const GenderSelector: React.FC<GenderSelectorProps> = ({
           type="button"
           onClick={() => onChange('female')}
           className={cn(
-            'relative p-6 rounded-2xl border-2 transition-all duration-300',
+            'relative p-2 rounded-2xl border-2 transition-all duration-300',
             'hover:shadow-lg transform hover:-translate-y-1',
             'focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2',
             value === 'female'
@@ -70,9 +70,9 @@ export const GenderSelector: React.FC<GenderSelectorProps> = ({
               : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-pink-300 dark:hover:border-pink-500'
           )}
         >
-          <div className="flex flex-col items-center space-y-3">
+          <div className="flex flex-row items-center justify-center gap-1">
             <div className={cn(
-              'w-12 h-12 rounded-full flex items-center justify-center text-2xl',
+              'w-6 h-6 rounded-full flex items-center justify-center text-lg',
               value === 'female'
                 ? 'bg-pink-500 text-white'
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
@@ -80,7 +80,7 @@ export const GenderSelector: React.FC<GenderSelectorProps> = ({
               👩
             </div>
             <span className={cn(
-              'font-medium text-lg',
+              'font-medium text-sm',
               value === 'female'
                 ? 'text-pink-700 dark:text-pink-300'
                 : 'text-gray-700 dark:text-gray-300'

@@ -199,7 +199,7 @@ export default function Home() {
           <div className="text-center mt-4 mb-2">
             <button
               onClick={resetApp}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-lg"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-lg md:text-xl"
             >
               <RotateCcw className="w-4 h-4" />
               다시 하기
@@ -218,7 +218,7 @@ export default function Home() {
           <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-4xl lg:whitespace-nowrap font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
             오늘의 손금 분석
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base mb-6">
+          <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base mb-6 min-[701px]:mb-6 min-[0px]:mb-0">
             손바닥 사진으로 운세를 확인해보세요 ✨
           </p>
         </div>
@@ -349,7 +349,7 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8 md:mt-8 text-sm md:text-base text-gray-500 dark:text-gray-400">
+        <div className="text-center text-sm md:text-base text-gray-500 dark:text-gray-400 min-[701px]:mt-8 min-[0px]:mt-0">
           <p>✨ AI가 분석하는 재미있는 손금 운세 ✨</p>
         </div>
       </div>
