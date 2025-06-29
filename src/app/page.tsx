@@ -10,6 +10,7 @@ import { FortuneResult } from "../components/FortuneResult";
 import ProgressSteps from "../components/ProgressSteps";
 import { Loading } from "../components/ui/Loading";
 import { analyzePalm } from "../lib/gemini";
+import { fileToBase64 } from '../lib/utils';
 
 interface AnalysisResult {
   content: string;
@@ -79,13 +80,21 @@ export default function Home() {
   const handleAnalysis = async () => {
     if (!selectedImage || !gender || !age) return;
 
+    // 업로드 전 크기 이중 체크
+    if (selectedImage.size > 2.3 * 1024 * 1024) {
+      alert('이미지 크기가 2.3MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
+      return;
+    }
+    const base64Image = await fileToBase64(selectedImage);
+    if (base64Image.length > 4 * 1024 * 1024) {
+      alert('이미지 인코딩 후 크기가 4MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
+      return;
+    }
+
     setIsAnalyzing(true);
     setCurrentStep('loading');
 
     try {
-      // Base64로 이미지 변환
-      const base64Image = await convertToBase64(selectedImage);
-      
       const response = await fetch('/api/analyze-palm', {
         method: 'POST',
         headers: {
@@ -113,18 +122,6 @@ export default function Home() {
     } finally {
       setIsAnalyzing(false);
     }
-  };
-
-  const convertToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64String = reader.result as string;
-        resolve(base64String.split(',')[1]); // Remove data:image/...;base64, prefix
-      };
-      reader.onerror = reject;
-    });
   };
 
   const resetApp = () => {
