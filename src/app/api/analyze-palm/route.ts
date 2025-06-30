@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Gemini 1.5 Flash 모델 사용
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    // Gemini 2.5 Flash 모델 사용
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const genderText = gender === 'male' ? '남성' : '여성';
     

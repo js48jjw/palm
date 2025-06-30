@@ -298,7 +298,7 @@ export default function Home() {
                       className="inline-flex items-center gap-2 px-5 md:px-6 py-3 md:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 min-w-[120px] whitespace-nowrap text-lg md:text-xl"
                     >
                       <Upload className="w-4 h-4 md:w-5 md:h-5" />
-                      파일 선택
+                      파일선택
                     </button>
                   </div>
                 </div>
