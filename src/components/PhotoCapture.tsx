@@ -76,10 +76,10 @@ async function resizeImageToBase64Max(file: File, maxBase64Size = 4 * 1024 * 102
   // base64의 실제 바이트 크기 계산: base64.length * 3 / 4
   while ((base64.length * 3 / 4) > maxBase64Size && tryCount < 20) {
     quality -= 0.1;
-    if (quality < 0.1) quality = 0.1;
-    if (maxWidth > 200 && maxHeight > 200) {
-      maxWidth = Math.max(200, Math.floor(maxWidth * 0.8));
-      maxHeight = Math.max(200, Math.floor(maxHeight * 0.8));
+    if (quality < 0.3) quality = 0.3;
+    if (maxWidth > 400 && maxHeight > 400) {
+      maxWidth = Math.max(400, Math.floor(maxWidth * 0.8));
+      maxHeight = Math.max(400, Math.floor(maxHeight * 0.8));
     }
     blob = await resizeImage(file, maxWidth, maxHeight, quality);
     base64 = await fileToBase64(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
