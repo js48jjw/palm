@@ -222,7 +222,7 @@ export default function Home() {
           ></ins>
         </div>
         {/* 광고와 결과 컨텐츠 사이 여백 */}
-        <div style={{ height: 32 }} />
+        <div style={{ height: 16 }} />
         <div className="w-full bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-purple-900 dark:via-pink-900 dark:to-yellow-900 pt-4 pb-4 force-top" style={{ minHeight: '100vh' }}>
           <div className="max-w-3xl w-full mx-auto px-2 sm:px-2 md:px-3">
             <div className="text-center mb-4">
