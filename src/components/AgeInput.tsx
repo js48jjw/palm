@@ -52,7 +52,6 @@ export const AgeInput: React.FC<AgeInputProps> = ({
       <div className={className}>
         <Input
           type="number"
-          label="나이를 입력해주세요"
           placeholder="예: 25"
           value={value}
           onChange={handleChange}
