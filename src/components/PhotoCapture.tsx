@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { Button } from './ui/Button';
 import { cn, isValidImageFile, createImagePreview, fileToBase64 } from '@/lib/utils';
 import { Camera, Upload, X, RotateCcw } from 'lucide-react';
+import * as bodyPix from '@tensorflow-models/body-pix';
+import '@tensorflow/tfjs';
 
 interface PhotoCaptureProps {
   onImageSelect: (file: File) => void;
@@ -70,6 +72,55 @@ function resizeImageSmart(file: File, maxSizeMB = 4, minQuality = 0.3, minDimens
   });
 }
 
+// BodyPix로 손만 남기고 배경을 흰색으로 처리하는 함수
+async function addHandMaskToWhiteBackground(file: File): Promise<File> {
+  return new Promise(async (resolve, reject) => {
+    const img = new window.Image();
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      img.src = e.target?.result as string;
+    };
+    img.onerror = reject;
+    img.onload = async () => {
+      const net = await bodyPix.load();
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      // 손 마스크 추출
+      const segmentation = await net.segmentPersonParts(img, { internalResolution: 'medium' });
+      const maskData = bodyPix.toMask(segmentation, { r: 0, g: 0, b: 0, a: 0 }, { r: 255, g: 255, b: 255, a: 255 });
+      // ImageData를 임시 캔버스에 그림
+      const maskCanvas = document.createElement('canvas');
+      maskCanvas.width = img.width;
+      maskCanvas.height = img.height;
+      maskCanvas.getContext('2d')!.putImageData(maskData, 0, 0);
+      // 배경을 흰색으로 채우고 손만 원본 유지
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = img.width;
+      tempCanvas.height = img.height;
+      const tempCtx = tempCanvas.getContext('2d');
+      // 1. 배경 흰색
+      tempCtx!.fillStyle = '#fff';
+      tempCtx!.fillRect(0, 0, img.width, img.height);
+      // 2. 손 마스크 적용
+      tempCtx!.drawImage(canvas, 0, 0);
+      tempCtx!.globalCompositeOperation = 'destination-in';
+      tempCtx!.drawImage(maskCanvas, 0, 0);
+      tempCtx!.globalCompositeOperation = 'destination-over';
+      tempCtx!.fillStyle = '#fff';
+      tempCtx!.fillRect(0, 0, img.width, img.height);
+      tempCanvas.toBlob((blob) => {
+        if (!blob) return reject(new Error('손 마스킹 실패'));
+        resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg', lastModified: Date.now() }));
+      }, 'image/jpeg', 0.9);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   onImageSelect,
   uploading,
@@ -113,28 +164,25 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
 
   const capturePhoto = async () => {
     if (!videoRef.current || !canvasRef.current) return;
-
     const canvas = canvasRef.current;
     const video = videoRef.current;
     const context = canvas.getContext('2d');
-
     if (!context) return;
-
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0);
-
     canvas.toBlob(async (blob) => {
       if (blob) {
         let file = new File([blob], 'palm-photo.jpg', { type: 'image/jpeg' });
         try {
+          file = await addHandMaskToWhiteBackground(file);
           file = await resizeImageSmart(file, 4, 0.3, 400);
           if (file.size > 4 * 1024 * 1024) {
             setError('이미지 크기를 4MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
             return;
           }
         } catch (err) {
-          setError('이미지 리사이즈에 실패했습니다.');
+          setError('이미지 처리에 실패했습니다.');
           return;
         }
         onImageSelect(file);
@@ -146,23 +194,21 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setError('');
-
     if (!isValidImageFile(file)) {
       setError('JPG, PNG, WebP 파일만 업로드 가능합니다 (최대 10MB)');
       return;
     }
-
     let processedFile = file;
     try {
-      processedFile = await resizeImageSmart(file, 4, 0.3, 400);
+      processedFile = await addHandMaskToWhiteBackground(file);
+      processedFile = await resizeImageSmart(processedFile, 4, 0.3, 400);
       if (processedFile.size > 4 * 1024 * 1024) {
         setError('이미지 크기를 4MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
         return;
       }
     } catch (err) {
-      setError('이미지 리사이즈에 실패했습니다.');
+      setError('이미지 처리에 실패했습니다.');
       return;
     }
     onImageSelect(processedFile);
