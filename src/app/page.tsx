@@ -313,7 +313,7 @@ export default function Home() {
                   <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-3 md:p-4 text-center">
                     <Camera className="w-8 h-8 md:w-10 md:h-10 text-gray-400 mx-auto mb-2 md:mb-2" />
                     <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 mb-3 md:mb-3">
-                      손바닥 사진을 업로드해주세요
+                      {isUploading ? '업로딩중...' : '손바닥 사진을 업로드해주세요'}
                     </p>
                     <div className="flex gap-2 md:gap-2 justify-center">
                       <button
