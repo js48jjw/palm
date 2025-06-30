@@ -211,18 +211,20 @@ export default function Home() {
     return (
       <>
         {/* 결과화면 맨 위 광고 */}
-        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: 0 }}>
           <ins
             className="kakao_ad_area"
-            style={{ display: 'block', width: 320, maxWidth: '100%' }}
+            style={{ display: 'block', width: 320, maxWidth: '100%', height: 50 }}
             data-ad-unit="DAN-Xz4xE25ZdJKQpK76"
             data-ad-width="320"
             data-ad-height="50"
             data-ad-onfail="adfitTopOnFail"
           ></ins>
         </div>
+        {/* 광고와 결과 컨텐츠 사이 여백 */}
+        <div style={{ height: 32 }} />
         <div className="w-full bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-purple-900 dark:via-pink-900 dark:to-yellow-900 pt-4 pb-4 force-top" style={{ minHeight: '100vh' }}>
-          <div className="max-w-3xl w-full mx-auto px-2 sm:px-2 md:px-3 mt-2">
+          <div className="max-w-3xl w-full mx-auto px-2 sm:px-2 md:px-3">
             <div className="text-center mb-4">
               <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-3xl lg:whitespace-nowrap font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">
                 오늘의 손금 분석
