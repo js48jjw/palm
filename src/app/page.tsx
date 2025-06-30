@@ -250,13 +250,9 @@ export default function Home() {
             </div>
 
             <div className="text-center mt-4 mb-2">
-              <button
-                onClick={resetApp}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-lg md:text-xl"
-              >
-                <RotateCcw className="w-4 h-4" />
-                다시 하기
-              </button>
+              <div className="text-lg md:text-xl font-semibold text-gray-700 dark:text-gray-200 py-6">
+                오늘도 좋은하루 되세요^^
+              </div>
             </div>
           </div>
           {/* 결과화면 맨 아래 광고 */}
