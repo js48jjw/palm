@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { Button } from './ui/Button';
@@ -66,6 +65,28 @@ async function resizeImageToMaxSize(file: File, maxSize = 3.9 * 1024 * 1024) {
   return blob;
 }
 
+// base64 인코딩 후 크기가 4MB 이하가 될 때까지 반복적으로 리사이즈/압축
+async function resizeImageToBase64Max(file: File, maxBase64Size = 4 * 1024 * 1024) {
+  let quality = 0.8;
+  let maxWidth = 1600;
+  let maxHeight = 1600;
+  let blob = await resizeImage(file, maxWidth, maxHeight, quality);
+  let tryCount = 0;
+  let base64 = await fileToBase64(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+  while (base64.length > maxBase64Size && tryCount < 7) {
+    quality -= 0.2;
+    if (quality < 0.3) {
+      quality = 0.3;
+      maxWidth = Math.floor(maxWidth * 0.8);
+      maxHeight = Math.floor(maxHeight * 0.8);
+    }
+    blob = await resizeImage(file, maxWidth, maxHeight, quality);
+    base64 = await fileToBase64(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
+    tryCount++;
+  }
+  return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+}
+
 export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   onImageSelect,
   uploading,
@@ -128,6 +149,16 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
           const resizedBlob = await resizeImageToMaxSize(file, 3.9 * 1024 * 1024);
           file = new File([resizedBlob], 'palm-photo.jpg', { type: 'image/jpeg' });
         }
+        // base64 인코딩 후 크기 체크 및 반복 리사이즈
+        let base64 = await fileToBase64(file);
+        if (base64.length > 4 * 1024 * 1024) {
+          file = await resizeImageToBase64Max(file, 4 * 1024 * 1024);
+          base64 = await fileToBase64(file);
+          if (base64.length > 4 * 1024 * 1024) {
+            setError('이미지 인코딩 후 크기가 4MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
+            return;
+          }
+        }
         onImageSelect(file);
         stopCamera();
       }
@@ -146,38 +177,37 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
     }
 
     // 3.9MB 초과 시 반복적으로 리사이즈 및 압축
+    let processedFile = file;
     if (file.size > 3.9 * 1024 * 1024) {
       try {
         const blob = await resizeImageToMaxSize(file, 3.9 * 1024 * 1024);
-        const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
-        console.log('최종 파일 크기:', resizedFile.size);
-        if (resizedFile.size > 3.9 * 1024 * 1024) {
+        processedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+        console.log('최종 파일 크기:', processedFile.size);
+        if (processedFile.size > 3.9 * 1024 * 1024) {
           setError('이미지 크기를 3.9MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
           return;
         }
-        // base64 인코딩 후 크기 체크
-        const base64 = await fileToBase64(resizedFile);
+      } catch (err) {
+        setError('이미지 크기 축소에 실패했습니다.');
+        return;
+      }
+    }
+    // base64 인코딩 후 크기 체크 및 반복 리사이즈
+    let base64 = await fileToBase64(processedFile);
+    if (base64.length > 4 * 1024 * 1024) {
+      try {
+        processedFile = await resizeImageToBase64Max(processedFile, 4 * 1024 * 1024);
+        base64 = await fileToBase64(processedFile);
         if (base64.length > 4 * 1024 * 1024) {
           setError('이미지 인코딩 후 크기가 4MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
           return;
         }
-        onImageSelect(resizedFile);
       } catch (err) {
-        setError('이미지 크기 축소에 실패했습니다.');
-      }
-    } else {
-      if (file.size > 3.9 * 1024 * 1024) {
-        setError('이미지 크기가 3.9MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
+        setError('이미지 인코딩 후 크기 축소에 실패했습니다.');
         return;
       }
-      // base64 인코딩 후 크기 체크
-      const base64 = await fileToBase64(file);
-      if (base64.length > 4 * 1024 * 1024) {
-        setError('이미지 인코딩 후 크기가 4MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
-        return;
-      }
-      onImageSelect(file);
     }
+    onImageSelect(processedFile);
   };
 
   const resetImage = () => {
