@@ -165,45 +165,69 @@ export default function Home() {
 
   if (currentStep === 'result' && analysisResult) {
     return (
-      <div className="w-full bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-purple-900 dark:via-pink-900 dark:to-yellow-900 pt-14 pb-14 force-top" style={{ minHeight: '100vh' }}>
-        <div className="max-w-3xl w-full mx-auto px-2 sm:px-2 md:px-3 mt-2">
-          <div className="text-center mb-4">
-            <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-3xl lg:whitespace-nowrap font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">
-              오늘의 손금 분석
-            </h1>
-            <div className="flex items-center justify-center gap-1">
-              <Sparkles className="w-4 h-4 text-yellow-500" />
-              <span className="text-gray-600 dark:text-gray-400 text-sm">분석 완료!</span>
-              <Sparkles className="w-4 h-4 text-yellow-500" />
-            </div>
-          </div>
-
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
-            <div className="space-y-3">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-                  🔮 운세 결과
-                </h2>
+      <>
+        {/* 결과화면 맨 위 광고 */}
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: 16 }}>
+          <ins
+            className="kakao_ad_area"
+            style={{ display: 'block', width: 320, maxWidth: '100%' }}
+            data-ad-unit="DAN-Xz4xE25ZdJKQpK76"
+            data-ad-width="320"
+            data-ad-height="50"
+            data-ad-onfail="adfitTopOnFail"
+          ></ins>
+        </div>
+        <div className="w-full bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-purple-900 dark:via-pink-900 dark:to-yellow-900 pt-4 pb-4 force-top" style={{ minHeight: '100vh' }}>
+          <div className="max-w-3xl w-full mx-auto px-2 sm:px-2 md:px-3 mt-2">
+            <div className="text-center mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-3xl lg:whitespace-nowrap font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">
+                오늘의 손금 분석
+              </h1>
+              <div className="flex items-center justify-center gap-1">
+                <Sparkles className="w-4 h-4 text-yellow-500" />
+                <span className="text-gray-600 dark:text-gray-400 text-sm">분석 완료!</span>
+                <Sparkles className="w-4 h-4 text-yellow-500" />
               </div>
-              <div className="prose prose-lg max-w-none dark:prose-invert">
-                <div className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {analysisResult.content}
+            </div>
+
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20">
+              <div className="space-y-3">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                    🔮 운세 결과
+                  </h2>
+                </div>
+                <div className="prose prose-lg max-w-none dark:prose-invert">
+                  <div className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    {analysisResult.content}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="text-center mt-4 mb-2">
-            <button
-              onClick={resetApp}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-lg md:text-xl"
-            >
-              <RotateCcw className="w-4 h-4" />
-              다시 하기
-            </button>
+            <div className="text-center mt-4 mb-2">
+              <button
+                onClick={resetApp}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 text-lg md:text-xl"
+              >
+                <RotateCcw className="w-4 h-4" />
+                다시 하기
+              </button>
+            </div>
+          </div>
+          {/* 결과화면 맨 아래 광고 */}
+          <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: 24 }}>
+            <ins
+              className="kakao_ad_area"
+              style={{ display: 'block', width: 320, maxWidth: '100%' }}
+              data-ad-unit="DAN-lYOfiVolJOlJuE3a"
+              data-ad-width="320"
+              data-ad-height="50"
+              data-ad-onfail="adfitBottomOnFail"
+            ></ins>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
