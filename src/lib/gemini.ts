@@ -7,6 +7,7 @@ if (!API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY);
+// Gemini 2.5 Flash 모델 사용 (무료 등급: 분당 10회, 일 250회)
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
 export interface PalmAnalysisRequest {

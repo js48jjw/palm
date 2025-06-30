@@ -136,56 +136,39 @@ export default function Home() {
 
     // 광고 DOM 강제 복구
     setTimeout(() => {
-      // 상단 광고
-      if (!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-Xz4xE25ZdJKQpK76"]')) {
-        const topDiv = document.createElement('div');
-        topDiv.style.display = 'flex';
-        topDiv.style.justifyContent = 'center';
-        topDiv.style.position = 'fixed';
-        topDiv.style.top = '0';
-        topDiv.style.left = '50%';
-        topDiv.style.transform = 'translateX(-50%)';
-        topDiv.style.width = '320px';
-        topDiv.style.maxWidth = '100%';
-        topDiv.style.zIndex = '99999';
-        const ins = document.createElement('ins');
-        ins.className = 'kakao_ad_area';
-        ins.style.display = 'block';
-        ins.style.width = '100%';
-        ins.setAttribute('data-ad-unit', 'DAN-Xz4xE25ZdJKQpK76');
-        ins.setAttribute('data-ad-width', '320');
-        ins.setAttribute('data-ad-height', '50');
-        ins.setAttribute('data-ad-onfail', 'adfitTopOnFail');
-        topDiv.appendChild(ins);
-        document.body.appendChild(topDiv);
-      }
-      // 하단 광고
-      if (!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-lYOfiVolJOlJuE3a"]')) {
-        const bottomDiv = document.createElement('div');
-        bottomDiv.style.display = 'flex';
-        bottomDiv.style.justifyContent = 'center';
-        bottomDiv.style.position = 'fixed';
-        bottomDiv.style.left = '50%';
-        bottomDiv.style.bottom = '0';
-        bottomDiv.style.transform = 'translateX(-50%)';
-        bottomDiv.style.width = '320px';
-        bottomDiv.style.maxWidth = '100%';
-        bottomDiv.style.zIndex = '99999';
-        const ins2 = document.createElement('ins');
-        ins2.className = 'kakao_ad_area';
-        ins2.style.display = 'block';
-        ins2.style.width = '100%';
-        ins2.setAttribute('data-ad-unit', 'DAN-lYOfiVolJOlJuE3a');
-        ins2.setAttribute('data-ad-width', '320');
-        ins2.setAttribute('data-ad-height', '50');
-        ins2.setAttribute('data-ad-onfail', 'adfitBottomOnFail');
-        bottomDiv.appendChild(ins2);
-        document.body.appendChild(bottomDiv);
-      }
+      restoreAdfit();
     }, 100);
   };
 
   const isFormValid = gender && age && selectedImage && !isUploading;
+
+  // 광고 DOM 강제 복구 함수 (모바일 대응)
+  function restoreAdfit() {
+    // 상단 광고
+    if (!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-Xz4xE25ZdJKQpK76"]')) {
+      const ins = document.createElement('ins');
+      ins.className = 'kakao_ad_area';
+      ins.setAttribute('style', 'display:block;width:100%;min-height:50px');
+      ins.setAttribute('data-ad-unit', 'DAN-Xz4xE25ZdJKQpK76');
+      ins.setAttribute('data-ad-width', '320');
+      ins.setAttribute('data-ad-height', '50');
+      ins.setAttribute('data-ad-onfail', 'adfitTopOnFail');
+      document.body.prepend(ins);
+      (window as any).kakao && (window as any).kakao.adfit && (window as any).kakao.adfit.load();
+    }
+    // 하단 광고
+    if (!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-lYOfiVolJOlJuE3a"]')) {
+      const ins2 = document.createElement('ins');
+      ins2.className = 'kakao_ad_area';
+      ins2.setAttribute('style', 'display:block;width:100%;min-height:50px');
+      ins2.setAttribute('data-ad-unit', 'DAN-lYOfiVolJOlJuE3a');
+      ins2.setAttribute('data-ad-width', '320');
+      ins2.setAttribute('data-ad-height', '50');
+      ins2.setAttribute('data-ad-onfail', 'adfitBottomOnFail');
+      document.body.appendChild(ins2);
+      (window as any).kakao && (window as any).kakao.adfit && (window as any).kakao.adfit.load();
+    }
+  }
 
   if (currentStep === 'loading') {
     return (

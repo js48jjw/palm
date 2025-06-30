@@ -11,81 +11,63 @@ interface PhotoCaptureProps {
   className?: string;
 }
 
-// 이미지 리사이즈 및 압축 함수 추가
-function resizeImage(file: File, maxWidth = 1600, maxHeight = 1600, quality = 0.8): Promise<Blob> {
+// 이미지 리사이즈 및 압축 함수 (하나로 통합)
+function resizeImageSmart(file: File, maxSizeMB = 4, minQuality = 0.3, minDimension = 400): Promise<File> {
   return new Promise((resolve, reject) => {
     const img = new window.Image();
     const reader = new FileReader();
     reader.onload = (e) => {
       img.src = e.target?.result as string;
     };
+    img.onerror = reject;
     img.onload = () => {
-      let { width, height } = img;
-      if (width > maxWidth || height > maxHeight) {
-        const scale = Math.min(maxWidth / width, maxHeight / height);
-        width = width * scale;
-        height = height * scale;
-      }
+      let width = img.width;
+      let height = img.height;
+      let quality = 0.8;
+      let maxDimension = Math.max(width, height);
+      let tryCount = 0;
       const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
       const ctx = canvas.getContext('2d');
-      ctx?.drawImage(img, 0, 0, width, height);
-      canvas.toBlob(
-        (blob) => {
-          if (blob) resolve(blob);
-          else reject(new Error('이미지 변환 실패'));
-        },
-        'image/jpeg',
-        quality
-      );
+      // 해상도/품질 반복적으로 줄이기
+      const tryCompress = () => {
+        canvas.width = width;
+        canvas.height = height;
+        ctx?.clearRect(0, 0, width, height);
+        ctx?.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(async (blob) => {
+          if (!blob) return reject(new Error('이미지 변환 실패'));
+          if (blob.size <= maxSizeMB * 1024 * 1024) {
+            const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(resizedFile);
+          } else if (quality > minQuality) {
+            quality = Math.max(minQuality, quality - 0.1);
+            tryCount++;
+            tryCompress();
+          } else if (Math.max(width, height) > minDimension) {
+            // 해상도 줄이기
+            const scale = Math.max(minDimension / Math.max(width, height), 0.8);
+            width = Math.max(minDimension, Math.floor(width * scale));
+            height = Math.max(minDimension, Math.floor(height * scale));
+            tryCount++;
+            tryCompress();
+          } else {
+            // 더 이상 줄일 수 없음
+            const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(resizedFile);
+          }
+        }, 'image/jpeg', quality);
+      };
+      tryCompress();
     };
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
-}
-
-// 반복적으로 리사이즈/압축하여 3.9MB 이하로 만드는 함수
-async function resizeImageToMaxSize(file: File, maxSize = 3.9 * 1024 * 1024) {
-  let quality = 0.8;
-  let maxWidth = 1600;
-  let maxHeight = 1600;
-  let blob = await resizeImage(file, maxWidth, maxHeight, quality);
-  let tryCount = 0;
-  while (blob.size > maxSize && tryCount < 5) {
-    quality -= 0.2;
-    if (quality < 0.3) {
-      quality = 0.3;
-      maxWidth = Math.floor(maxWidth * 0.8);
-      maxHeight = Math.floor(maxHeight * 0.8);
-    }
-    blob = await resizeImage(file, maxWidth, maxHeight, quality);
-    tryCount++;
-  }
-  return blob;
-}
-
-// base64 인코딩 후 크기가 4MB 이하가 될 때까지 반복적으로 리사이즈/압축
-async function resizeImageToBase64Max(file: File, maxBase64Size = 4 * 1024 * 1024) {
-  let quality = 0.8;
-  let maxWidth = 1600;
-  let maxHeight = 1600;
-  let blob = await resizeImage(file, maxWidth, maxHeight, quality);
-  let tryCount = 0;
-  let base64 = await fileToBase64(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
-  // base64의 실제 바이트 크기 계산: base64.length * 3 / 4
-  while ((base64.length * 3 / 4) > maxBase64Size && tryCount < 20) {
-    quality -= 0.1;
-    if (quality < 0.3) quality = 0.3;
-    if (maxWidth > 400 && maxHeight > 400) {
-      maxWidth = Math.max(400, Math.floor(maxWidth * 0.8));
-      maxHeight = Math.max(400, Math.floor(maxHeight * 0.8));
-    }
-    blob = await resizeImage(file, maxWidth, maxHeight, quality);
-    base64 = await fileToBase64(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
-    tryCount++;
-  }
-  return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
 }
 
 export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
@@ -145,20 +127,15 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
     canvas.toBlob(async (blob) => {
       if (blob) {
         let file = new File([blob], 'palm-photo.jpg', { type: 'image/jpeg' });
-        // 3.9MB 초과 시 반복적으로 리사이즈 및 압축
-        if (file.size > 3.9 * 1024 * 1024) {
-          const resizedBlob = await resizeImageToMaxSize(file, 3.9 * 1024 * 1024);
-          file = new File([resizedBlob], 'palm-photo.jpg', { type: 'image/jpeg' });
-        }
-        // base64 인코딩 후 크기 체크 및 반복 리사이즈
-        let base64 = await fileToBase64(file);
-        if ((base64.length * 3 / 4) > 4 * 1024 * 1024) {
-          file = await resizeImageToBase64Max(file, 4 * 1024 * 1024);
-          base64 = await fileToBase64(file);
-          if ((base64.length * 3 / 4) > 4 * 1024 * 1024) {
-            setError('이미지 인코딩 후 크기가 4MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
+        try {
+          file = await resizeImageSmart(file, 4, 0.3, 400);
+          if (file.size > 4 * 1024 * 1024) {
+            setError('이미지 크기를 4MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
             return;
           }
+        } catch (err) {
+          setError('이미지 리사이즈에 실패했습니다.');
+          return;
         }
         onImageSelect(file);
         stopCamera();
@@ -177,36 +154,16 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       return;
     }
 
-    // 3.9MB 초과 시 반복적으로 리사이즈 및 압축
     let processedFile = file;
-    if (file.size > 3.9 * 1024 * 1024) {
-      try {
-        const blob = await resizeImageToMaxSize(file, 3.9 * 1024 * 1024);
-        processedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
-        console.log('최종 파일 크기:', processedFile.size);
-        if (processedFile.size > 3.9 * 1024 * 1024) {
-          setError('이미지 크기를 3.9MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
-          return;
-        }
-      } catch (err) {
-        setError('이미지 크기 축소에 실패했습니다.');
+    try {
+      processedFile = await resizeImageSmart(file, 4, 0.3, 400);
+      if (processedFile.size > 4 * 1024 * 1024) {
+        setError('이미지 크기를 4MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
         return;
       }
-    }
-    // base64 인코딩 후 크기 체크 및 반복 리사이즈
-    let base64 = await fileToBase64(processedFile);
-    if ((base64.length * 3 / 4) > 4 * 1024 * 1024) {
-      try {
-        processedFile = await resizeImageToBase64Max(processedFile, 4 * 1024 * 1024);
-        base64 = await fileToBase64(processedFile);
-        if ((base64.length * 3 / 4) > 4 * 1024 * 1024) {
-          setError('이미지 인코딩 후 크기가 4MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
-          return;
-        }
-      } catch (err) {
-        setError('이미지 인코딩 후 크기 축소에 실패했습니다.');
-        return;
-      }
+    } catch (err) {
+      setError('이미지 리사이즈에 실패했습니다.');
+      return;
     }
     onImageSelect(processedFile);
   };
