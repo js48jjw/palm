@@ -27,9 +27,13 @@ function resizeImageSmart(file: File, maxSizeMB = 4, minQuality = 0.3, minDimens
       let height = img.height;
       let quality = 0.8;
       let tryCount = 0;
+      const maxTries = 10;
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const tryCompress = async () => {
+        if (tryCount > maxTries) {
+          return reject(new Error('이미지 크기를 4MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.'));
+        }
         canvas.width = width;
         canvas.height = height;
         ctx?.clearRect(0, 0, width, height);
@@ -41,7 +45,8 @@ function resizeImageSmart(file: File, maxSizeMB = 4, minQuality = 0.3, minDimens
             lastModified: Date.now(),
           });
           const base64 = await fileToBase64(tempFile);
-          const base64Bytes = base64.length * 3 / 4;
+          // base64 문자열의 실제 바이트 수 계산
+          const base64Bytes = Math.ceil((base64.length * 3) / 4) - (base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0);
           if (base64Bytes <= maxSizeMB * 1024 * 1024) {
             resolve(tempFile);
           } else if (quality > minQuality) {

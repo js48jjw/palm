@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
+import { restoreAdfit } from '../lib/utils';
+import React from 'react';
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,7 +26,15 @@ export default function RootLayout({
   children: React.ReactNode & { resultView?: boolean };
 }>) {
   // children에 resultView prop이 있으면 결과화면임
-  const isResultView = (children as any)?.props?.resultView;
+  const isResultView = typeof children === 'object' && children && 'props' in children && (children as { props: any }).props.resultView;
+
+  // 광고 DOM 복구 (CSR에서만)
+  React.useEffect(() => {
+    if (!isResultView) {
+      restoreAdfit();
+    }
+  }, [isResultView]);
+
   return (
     <html lang="en">
       <head>

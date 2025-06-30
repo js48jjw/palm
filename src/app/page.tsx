@@ -11,32 +11,17 @@ import ProgressSteps from "../components/ProgressSteps";
 import { Loading } from "../components/ui/Loading";
 import { analyzePalm } from "../lib/gemini";
 import { fileToBase64 } from '../lib/utils';
+import { restoreAdfit } from '../lib/utils';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 interface AnalysisResult {
   content: string;
 }
 
 export default function Home() {
-  // localStorage에서 gender/age 불러오기
-  const getInitialGender = () => {
-    if (typeof window === 'undefined') return '';
-    const stored = window.localStorage.getItem('gender');
-    if (!stored) return '';
-    try {
-      const parsed = JSON.parse(stored);
-      if (parsed === 'male' || parsed === 'female') return parsed;
-      return '';
-    } catch { return ''; }
-  };
-  const getInitialAge = () => {
-    if (typeof window === 'undefined') return '';
-    const stored = window.localStorage.getItem('age');
-    if (!stored) return '';
-    try { return JSON.parse(stored); } catch { return ''; }
-  };
-
-  const [gender, setGender] = useState<'male' | 'female' | ''>(getInitialGender());
-  const [age, setAge] = useState<string>(getInitialAge());
+  // localStorage에서 gender/age 불러오기 및 상태 관리
+  const [gender, setGender] = useLocalStorage<'male' | 'female' | ''>('gender', '');
+  const [age, setAge] = useLocalStorage<number | ''>('age', '');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
@@ -47,16 +32,6 @@ export default function Home() {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-
-  // gender/age 변경 시 localStorage에 저장
-  useEffect(() => {
-    if (gender === 'male' || gender === 'female') {
-      window.localStorage.setItem('gender', JSON.stringify(gender));
-    }
-  }, [gender]);
-  useEffect(() => {
-    if (age !== '') window.localStorage.setItem('age', JSON.stringify(age));
-  }, [age]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -114,7 +89,7 @@ export default function Home() {
         body: JSON.stringify({
           image: base64Image,
           gender,
-          age: parseInt(age),
+          age: parseInt(age.toString()),
         }),
       });
 
@@ -136,15 +111,12 @@ export default function Home() {
   };
 
   const resetApp = () => {
-    setGender(gender);
-    setAge(age);
     setSelectedImage(null);
     setImagePreview('');
     setAnalysisResult(null);
     setCurrentStep('input');
     setIsUploading(false);
     setIsAnalyzing(false);
-
     // 광고 DOM 강제 복구
     setTimeout(() => {
       restoreAdfit();
@@ -152,34 +124,6 @@ export default function Home() {
   };
 
   const isFormValid = gender && age && selectedImage && !isUploading;
-
-  // 광고 DOM 강제 복구 함수 (모바일 대응)
-  function restoreAdfit() {
-    // 상단 광고
-    if (!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-Xz4xE25ZdJKQpK76"]')) {
-      const ins = document.createElement('ins');
-      ins.className = 'kakao_ad_area';
-      ins.setAttribute('style', 'display:block;width:100%;min-height:50px');
-      ins.setAttribute('data-ad-unit', 'DAN-Xz4xE25ZdJKQpK76');
-      ins.setAttribute('data-ad-width', '320');
-      ins.setAttribute('data-ad-height', '50');
-      ins.setAttribute('data-ad-onfail', 'adfitTopOnFail');
-      document.body.prepend(ins);
-      (window as any).kakao && (window as any).kakao.adfit && (window as any).kakao.adfit.load();
-    }
-    // 하단 광고
-    if (!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-lYOfiVolJOlJuE3a"]')) {
-      const ins2 = document.createElement('ins');
-      ins2.className = 'kakao_ad_area';
-      ins2.setAttribute('style', 'display:block;width:100%;min-height:50px');
-      ins2.setAttribute('data-ad-unit', 'DAN-lYOfiVolJOlJuE3a');
-      ins2.setAttribute('data-ad-width', '320');
-      ins2.setAttribute('data-ad-height', '50');
-      ins2.setAttribute('data-ad-onfail', 'adfitBottomOnFail');
-      document.body.appendChild(ins2);
-      (window as any).kakao && (window as any).kakao.adfit && (window as any).kakao.adfit.load();
-    }
-  }
 
   if (currentStep === 'loading') {
     return (
@@ -223,7 +167,7 @@ export default function Home() {
         </div>
         {/* 광고와 결과 컨텐츠 사이 여백 */}
         <div style={{ height: 16 }} />
-        <div className="w-full bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-purple-900 dark:via-pink-900 dark:to-yellow-900 pt-4 pb-4 force-top" style={{ minHeight: '100vh' }}>
+        <div className="w-full bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-purple-900 dark:via-pink-900 dark:to-yellow-900 pt-1 pb-4 force-top" style={{ minHeight: '100vh' }}>
           <div className="max-w-3xl w-full mx-auto px-2 sm:px-2 md:px-3">
             <div className="text-center mb-4">
               <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-3xl lg:whitespace-nowrap font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">
@@ -307,13 +251,9 @@ export default function Home() {
               <Calendar className="w-5 h-5 md:w-6 md:h-6" />
               나이 입력
             </label>
-            <input
-              type="number"
+            <AgeInput
               value={age}
-              onChange={(e) => setAge(e.target.value)}
-              placeholder="나이를 입력하세요"
-              min="1"
-              max="120"
+              onChange={(v) => setAge(typeof v === 'number' ? v : '')}
               className="w-full px-4 md:px-5 py-3 md:py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-200 text-lg md:text-xl"
             />
           </div>

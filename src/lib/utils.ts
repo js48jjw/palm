@@ -52,3 +52,41 @@ export function fileToBase64(file: File): Promise<string> {
     reader.readAsDataURL(file);
   });
 }
+
+/**
+ * 카카오 애드핏 광고 DOM 복구 함수 (상단/하단)
+ */
+export function restoreAdfit() {
+  // 상단 광고
+  if (!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-Xz4xE25ZdJKQpK76"]')) {
+    const ins = document.createElement('ins');
+    ins.className = 'kakao_ad_area';
+    ins.setAttribute('style', 'display:block;width:100%;min-height:50px');
+    ins.setAttribute('data-ad-unit', 'DAN-Xz4xE25ZdJKQpK76');
+    ins.setAttribute('data-ad-width', '320');
+    ins.setAttribute('data-ad-height', '50');
+    ins.setAttribute('data-ad-onfail', 'adfitTopOnFail');
+    document.body.prepend(ins);
+    (window as any).kakao && (window as any).kakao.adfit && (window as any).kakao.adfit.load();
+  }
+  // 하단 광고
+  if (!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-lYOfiVolJOlJuE3a"]')) {
+    const ins2 = document.createElement('ins');
+    ins2.className = 'kakao_ad_area';
+    ins2.setAttribute('style', 'display:block;width:100%;min-height:50px');
+    ins2.setAttribute('data-ad-unit', 'DAN-lYOfiVolJOlJuE3a');
+    ins2.setAttribute('data-ad-width', '320');
+    ins2.setAttribute('data-ad-height', '50');
+    ins2.setAttribute('data-ad-onfail', 'adfitBottomOnFail');
+    document.body.appendChild(ins2);
+    (window as any).kakao && (window as any).kakao.adfit && (window as any).kakao.adfit.load();
+  }
+}
+
+/**
+ * 광고 DOM 존재 여부 확인
+ */
+export function isAdfitPresent() {
+  return !!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-Xz4xE25ZdJKQpK76"]') &&
+         !!document.querySelector('.kakao_ad_area[data-ad-unit="DAN-lYOfiVolJOlJuE3a"]');
+}

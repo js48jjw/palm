@@ -21,7 +21,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (image.size > 4 * 1024 * 1024) { // 4MB
+    // base64 문자열의 실제 바이트 수 계산
+    const base64Length = image.length;
+    const base64Bytes = Math.ceil((base64Length * 3) / 4) - (image.endsWith('==') ? 2 : image.endsWith('=') ? 1 : 0);
+    if (base64Bytes > 4 * 1024 * 1024) { // 4MB
       return NextResponse.json(
         { error: '4MB 이하의 이미지만 업로드할 수 있습니다.' },
         { status: 400 }
@@ -77,13 +80,10 @@ export async function POST(request: NextRequest) {
     const text = response.text();
 
     return NextResponse.json({ content: text });
-
-  } catch (error) {
+  } catch (error: any) {
     console.error('Gemini API Error:', error);
-    
     // 에러 타입에 따른 구체적인 메시지
     let errorMessage = '분석 중 오류가 발생했습니다.';
-    
     if (error instanceof Error) {
       if (error.message.includes('API key')) {
         errorMessage = 'API 키 설정에 문제가 있습니다.';
@@ -91,9 +91,10 @@ export async function POST(request: NextRequest) {
         errorMessage = 'API 사용량 한도를 초과했습니다.';
       } else if (error.message.includes('image')) {
         errorMessage = '이미지 처리 중 오류가 발생했습니다.';
+      } else {
+        errorMessage = error.message;
       }
     }
-
     return NextResponse.json(
       { error: errorMessage },
       { status: 500 }
