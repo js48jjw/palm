@@ -26,42 +26,36 @@ function resizeImageSmart(file: File, maxSizeMB = 4, minQuality = 0.3, minDimens
       let width = img.width;
       let height = img.height;
       let quality = 0.8;
-      let maxDimension = Math.max(width, height);
       let tryCount = 0;
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      // 해상도/품질 반복적으로 줄이기
-      const tryCompress = () => {
+      const tryCompress = async () => {
         canvas.width = width;
         canvas.height = height;
         ctx?.clearRect(0, 0, width, height);
         ctx?.drawImage(img, 0, 0, width, height);
         canvas.toBlob(async (blob) => {
           if (!blob) return reject(new Error('이미지 변환 실패'));
-          if (blob.size <= maxSizeMB * 1024 * 1024) {
-            const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), {
-              type: 'image/jpeg',
-              lastModified: Date.now(),
-            });
-            resolve(resizedFile);
+          const tempFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), {
+            type: 'image/jpeg',
+            lastModified: Date.now(),
+          });
+          const base64 = await fileToBase64(tempFile);
+          const base64Bytes = base64.length * 3 / 4;
+          if (base64Bytes <= maxSizeMB * 1024 * 1024) {
+            resolve(tempFile);
           } else if (quality > minQuality) {
             quality = Math.max(minQuality, quality - 0.1);
             tryCount++;
             tryCompress();
           } else if (Math.max(width, height) > minDimension) {
-            // 해상도 줄이기
             const scale = Math.max(minDimension / Math.max(width, height), 0.8);
             width = Math.max(minDimension, Math.floor(width * scale));
             height = Math.max(minDimension, Math.floor(height * scale));
             tryCount++;
             tryCompress();
           } else {
-            // 더 이상 줄일 수 없음
-            const resizedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), {
-              type: 'image/jpeg',
-              lastModified: Date.now(),
-            });
-            resolve(resizedFile);
+            resolve(tempFile);
           }
         }, 'image/jpeg', quality);
       };
@@ -177,7 +171,9 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
         try {
           file = await addHandMaskToWhiteBackground(file);
           file = await resizeImageSmart(file, 4, 0.3, 400);
-          if (file.size > 4 * 1024 * 1024) {
+          const base64 = await fileToBase64(file);
+          const base64Bytes = base64.length * 3 / 4;
+          if (base64Bytes > 4 * 1024 * 1024) {
             setError('이미지 크기를 4MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
             return;
           }
@@ -203,7 +199,9 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
     try {
       processedFile = await addHandMaskToWhiteBackground(file);
       processedFile = await resizeImageSmart(processedFile, 4, 0.3, 400);
-      if (processedFile.size > 4 * 1024 * 1024) {
+      const base64 = await fileToBase64(processedFile);
+      const base64Bytes = base64.length * 3 / 4;
+      if (base64Bytes > 4 * 1024 * 1024) {
         setError('이미지 크기를 4MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
         return;
       }
