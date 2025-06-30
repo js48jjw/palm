@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { Button } from './ui/Button';
@@ -106,7 +107,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
     setCameraActive(false);
   };
 
-  const capturePhoto = () => {
+  const capturePhoto = async () => {
     if (!videoRef.current || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
@@ -119,9 +120,14 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0);
 
-    canvas.toBlob((blob) => {
+    canvas.toBlob(async (blob) => {
       if (blob) {
-        const file = new File([blob], 'palm-photo.jpg', { type: 'image/jpeg' });
+        let file = new File([blob], 'palm-photo.jpg', { type: 'image/jpeg' });
+        // 3.9MB 초과 시 반복적으로 리사이즈 및 압축
+        if (file.size > 3.9 * 1024 * 1024) {
+          const resizedBlob = await resizeImageToMaxSize(file, 3.9 * 1024 * 1024);
+          file = new File([resizedBlob], 'palm-photo.jpg', { type: 'image/jpeg' });
+        }
         onImageSelect(file);
         stopCamera();
       }
