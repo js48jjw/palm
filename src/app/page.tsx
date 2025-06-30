@@ -234,144 +234,153 @@ export default function Home() {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-purple-900 dark:via-pink-900 dark:to-yellow-900">
-      <div className="w-full max-w-lg mx-auto px-2 sm:px-2 md:px-3 force-top">
-        {/* Header */}
-        <div className="text-center mb-0 pt-0 md:mb-0 md:pt-0">
-          <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-4xl lg:whitespace-nowrap font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-            오늘의 손금 분석
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base mb-6 min-[701px]:mb-6 min-[0px]:mb-0">
-            손바닥 사진으로 운세를 확인해보세요 ✨
-          </p>
-        </div>
-
-        {/* Main Form */}
-        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg border border-gray-200 dark:border-gray-700 space-y-2 md:space-y-3 overflow-y-auto mt-0 mb-0 max-h-[90vh] md:max-h-[600px]">
-          {/* Gender Selection */}
-          <div className="space-y-2 md:space-y-2">
-            <label className="flex items-center gap-2 text-base md:text-lg font-semibold text-gray-700 dark:text-gray-300">
-              <User className="w-5 h-5 md:w-6 md:h-6" />
-              성별 선택
-            </label>
-            <div className="flex gap-2 md:gap-2">
-              {isMounted && (
-                <GenderSelector value={gender} onChange={setGender} />
-              )}
-            </div>
+    <>
+      <ErrorModal
+        isOpen={errorModal.open}
+        onClose={() => setErrorModal({ open: false, message: '' })}
+        title="에러"
+        message={errorModal.message}
+        variant="error"
+      />
+      <div className="w-full min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 dark:from-purple-900 dark:via-pink-900 dark:to-yellow-900">
+        <div className="w-full max-w-lg mx-auto px-2 sm:px-2 md:px-3 force-top">
+          {/* Header */}
+          <div className="text-center mb-0 pt-0 md:mb-0 md:pt-0">
+            <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-4xl lg:whitespace-nowrap font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              오늘의 손금 분석
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base mb-6 min-[701px]:mb-6 min-[0px]:mb-0">
+              손바닥 사진으로 운세를 확인해보세요 ✨
+            </p>
           </div>
 
-          {/* Age Input */}
-          <div className="space-y-2 md:space-y-2">
-            <label className="flex items-center gap-2 text-base md:text-lg font-semibold text-gray-700 dark:text-gray-300">
-              <Calendar className="w-5 h-5 md:w-6 md:h-6" />
-              나이 입력
-            </label>
-            <AgeInput
-              value={age}
-              onChange={(v) => setAge(typeof v === 'number' ? v : '')}
-              className="w-full px-4 md:px-5 py-3 md:py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-200 text-lg md:text-xl"
-            />
-          </div>
-
-          {/* Image Upload */}
-          <div className="space-y-2 md:space-y-2">
-            <label className="flex items-center gap-2 text-base md:text-lg font-semibold text-gray-700 dark:text-gray-300">
-              <Camera className="w-5 h-5 md:w-6 md:h-6" />
-              손바닥 사진 업로드
-            </label>
-            {imagePreview ? (
-              <div className="relative flex justify-center">
-                <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 h-40 md:h-56 flex items-center justify-center">
-                  <Image
-                    src={imagePreview}
-                    alt="선택된 손바닥 사진"
-                    width={400}
-                    height={400}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                {isUploading && (
-                  <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
-                    <div className="text-white text-center">
-                      <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
-                      <p>업로드 중...</p>
-                    </div>
-                  </div>
+          {/* Main Form */}
+          <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-3 md:p-4 shadow-lg border border-gray-200 dark:border-gray-700 space-y-2 md:space-y-3 overflow-y-auto mt-0 mb-0 max-h-[90vh] md:max-h-[600px]">
+            {/* Gender Selection */}
+            <div className="space-y-2 md:space-y-2">
+              <label className="flex items-center gap-2 text-base md:text-lg font-semibold text-gray-700 dark:text-gray-300">
+                <User className="w-5 h-5 md:w-6 md:h-6" />
+                성별 선택
+              </label>
+              <div className="flex gap-2 md:gap-2">
+                {isMounted && (
+                  <GenderSelector value={gender} onChange={setGender} />
                 )}
               </div>
-            ) : (
-              <div className="space-y-2 md:space-y-2">
-                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-3 md:p-4 text-center">
-                  <Camera className="w-8 h-8 md:w-10 md:h-10 text-gray-400 mx-auto mb-2 md:mb-2" />
-                  <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 mb-3 md:mb-3">
-                    손바닥 사진을 업로드해주세요
-                  </p>
-                  <div className="flex gap-2 md:gap-2 justify-center">
-                    <button
-                      onClick={() => cameraInputRef.current?.click()}
-                      className="inline-flex items-center gap-2 px-5 md:px-6 py-3 md:py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 min-w-[120px] whitespace-nowrap text-lg md:text-xl"
-                    >
-                      <Camera className="w-4 h-4 md:w-5 md:h-5" />
-                      카메라
-                    </button>
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="inline-flex items-center gap-2 px-5 md:px-6 py-3 md:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 min-w-[120px] whitespace-nowrap text-lg md:text-xl"
-                    >
-                      <Upload className="w-4 h-4 md:w-5 md:h-5" />
-                      파일선택
-                    </button>
+            </div>
+
+            {/* Age Input */}
+            <div className="space-y-2 md:space-y-2">
+              <label className="flex items-center gap-2 text-base md:text-lg font-semibold text-gray-700 dark:text-gray-300">
+                <Calendar className="w-5 h-5 md:w-6 md:h-6" />
+                나이 입력
+              </label>
+              <AgeInput
+                value={age}
+                onChange={(v) => setAge(typeof v === 'number' ? v : '')}
+                className="w-full px-4 md:px-5 py-3 md:py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-200 text-lg md:text-xl"
+              />
+            </div>
+
+            {/* Image Upload */}
+            <div className="space-y-2 md:space-y-2">
+              <label className="flex items-center gap-2 text-base md:text-lg font-semibold text-gray-700 dark:text-gray-300">
+                <Camera className="w-5 h-5 md:w-6 md:h-6" />
+                손바닥 사진 업로드
+              </label>
+              {imagePreview ? (
+                <div className="relative flex justify-center">
+                  <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 h-40 md:h-56 flex items-center justify-center">
+                    <Image
+                      src={imagePreview}
+                      alt="선택된 손바닥 사진"
+                      width={400}
+                      height={400}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  {isUploading && (
+                    <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
+                      <div className="text-white text-center">
+                        <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
+                        <p>업로드 중...</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-2 md:space-y-2">
+                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-3 md:p-4 text-center">
+                    <Camera className="w-8 h-8 md:w-10 md:h-10 text-gray-400 mx-auto mb-2 md:mb-2" />
+                    <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 mb-3 md:mb-3">
+                      손바닥 사진을 업로드해주세요
+                    </p>
+                    <div className="flex gap-2 md:gap-2 justify-center">
+                      <button
+                        onClick={() => cameraInputRef.current?.click()}
+                        className="inline-flex items-center gap-2 px-5 md:px-6 py-3 md:py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 min-w-[120px] whitespace-nowrap text-lg md:text-xl"
+                      >
+                        <Camera className="w-4 h-4 md:w-5 md:h-5" />
+                        카메라
+                      </button>
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="inline-flex items-center gap-2 px-5 md:px-6 py-3 md:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 min-w-[120px] whitespace-nowrap text-lg md:text-xl"
+                      >
+                        <Upload className="w-4 h-4 md:w-5 md:h-5" />
+                        파일선택
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageSelect}
-              className="hidden"
-            />
-            <input
-              ref={cameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleImageSelect}
-              className="hidden"
-            />
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+            </div>
+
+            {/* Analysis Button */}
+            <button
+              onClick={handleAnalysis}
+              disabled={!isFormValid || isAnalyzing}
+              className={`w-full py-3 md:py-4 px-5 md:px-6 rounded-xl font-semibold text-white transition-all duration-200 text-lg md:text-xl ${
+                isFormValid && !isAnalyzing
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl transform hover:scale-105'
+                  : 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed'
+              }`}
+            >
+              {isAnalyzing ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  분석 중...
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  손금 분석하기
+                </div>
+              )}
+            </button>
           </div>
 
-          {/* Analysis Button */}
-          <button
-            onClick={handleAnalysis}
-            disabled={!isFormValid || isAnalyzing}
-            className={`w-full py-3 md:py-4 px-5 md:px-6 rounded-xl font-semibold text-white transition-all duration-200 text-lg md:text-xl ${
-              isFormValid && !isAnalyzing
-                ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg hover:shadow-xl transform hover:scale-105'
-                : 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed'
-            }`}
-          >
-            {isAnalyzing ? (
-              <div className="flex items-center justify-center gap-2">
-                <Loader2 className="w-5 h-5 animate-spin" />
-                분석 중...
-              </div>
-            ) : (
-              <div className="flex items-center justify-center gap-2">
-                <Sparkles className="w-5 h-5" />
-                손금 분석하기
-              </div>
-            )}
-          </button>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center text-sm md:text-base text-gray-500 dark:text-gray-400 min-[701px]:mt-8 min-[0px]:mt-0">
-          <p>✨ AI가 분석하는 재미있는 손금 운세 ✨</p>
+          {/* Footer */}
+          <div className="text-center text-sm md:text-base text-gray-500 dark:text-gray-400 min-[701px]:mt-8 min-[0px]:mt-0">
+            <p>✨ AI가 분석하는 재미있는 손금 운세 ✨</p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
