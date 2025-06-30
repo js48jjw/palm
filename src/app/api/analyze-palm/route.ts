@@ -36,6 +36,23 @@ export async function POST(request: NextRequest) {
 
     const genderText = gender === 'male' ? '남성' : '여성';
     
+    // 1. 손바닥 사진 여부 판별 프롬프트
+    const palmCheckPrompt = `아래 이미지는 손바닥(손금) 사진인가요? 만약 손바닥(손금)이 명확하게 보이지 않으면 "NO"만, 손바닥(손금)이 명확히 보이면 "YES"만 답하세요. 그 외의 설명은 하지 마세요.`;
+    const imagePart = {
+      inlineData: {
+        data: image,
+        mimeType: 'image/jpeg',
+      },
+    };
+    const palmCheckResult = await model.generateContent([palmCheckPrompt, imagePart]);
+    const palmCheckText = (await palmCheckResult.response).text().trim();
+    if (palmCheckText !== 'YES') {
+      return NextResponse.json(
+        { error: '손바닥(손금) 사진이 아닙니다. 손바닥이 잘 보이도록 다시 촬영하거나 업로드해 주세요.' },
+        { status: 400 }
+      );
+    }
+
     const prompt = `
 당신은 전문 손금 분석가입니다.
 제공된 손금 사진을 보고, ${genderText}, ${age}세의 오늘의 운세를 분석해 주세요.
@@ -67,13 +84,6 @@ export async function POST(request: NextRequest) {
 따뜻하고 긍정적인 톤으로 작성해주시고, 구체적이고 실용적인 조언을 포함해주세요.
 손금의 생명선, 운명선, 감정선, 지능선 등을 종합적으로 분석하여 답변해 주세요.
 `;
-
-    const imagePart = {
-      inlineData: {
-        data: image,
-        mimeType: 'image/jpeg',
-      },
-    };
 
     const result = await model.generateContent([prompt, imagePart]);
     const response = await result.response;
