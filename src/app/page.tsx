@@ -62,18 +62,29 @@ export default function Home() {
     setIsMounted(true);
   }, []);
 
-  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setIsUploading(true);
-      setSelectedImage(file);
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-        setTimeout(() => setIsUploading(false), 1000); // 업로드 효과
-      };
-      reader.readAsDataURL(file);
+      try {
+        // 서버로 리사이즈/압축 요청
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch('/api/resize', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('이미지 리사이즈/압축 실패');
+        const blob = await res.blob();
+        const processedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg', lastModified: Date.now() });
+        setSelectedImage(processedFile);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setImagePreview(e.target?.result as string);
+          setTimeout(() => setIsUploading(false), 1000);
+        };
+        reader.readAsDataURL(processedFile);
+      } catch (err) {
+        alert('이미지 처리에 실패했습니다.');
+        setIsUploading(false);
+      }
     }
   };
 

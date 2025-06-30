@@ -12,13 +12,16 @@
     "@google/generative-ai": "^0.2.1",
     "@tensorflow-models/body-pix": "^2.2.1",
     "@tensorflow/tfjs": "^4.22.0",
+    "formidable": "^3.5.4",
     "lucide-react": "^0.263.1",
     "next": "^14.2.30",
     "next-pwa": "^5.6.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "sharp": "^0.34.2"
   },
   "devDependencies": {
+    "@types/formidable": "^3.4.5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

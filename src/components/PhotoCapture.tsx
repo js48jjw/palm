@@ -127,6 +127,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   const [cameraActive, setCameraActive] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string>('');
+  const [setUploading, setUploadingState] = useState(uploading);
 
   const startCamera = async () => {
     try {
@@ -195,21 +196,21 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       setError('JPG, PNG, WebP 파일만 업로드 가능합니다 (최대 10MB)');
       return;
     }
-    let processedFile = file;
+    setUploadingState(true);
     try {
-      processedFile = await addHandMaskToWhiteBackground(file);
-      processedFile = await resizeImageSmart(processedFile, 4, 0.3, 400);
-      const base64 = await fileToBase64(processedFile);
-      const base64Bytes = base64.length * 3 / 4;
-      if (base64Bytes > 4 * 1024 * 1024) {
-        setError('이미지 크기를 4MB 이하로 줄일 수 없습니다. 더 작은 이미지를 업로드해 주세요.');
-        return;
-      }
+      // 서버로 리사이즈/압축 요청
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/resize', { method: 'POST', body: formData });
+      if (!res.ok) throw new Error('이미지 리사이즈/압축 실패');
+      const blob = await res.blob();
+      const processedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg', lastModified: Date.now() });
+      onImageSelect(processedFile);
     } catch (err) {
       setError('이미지 처리에 실패했습니다.');
-      return;
+    } finally {
+      setUploadingState(false);
     }
-    onImageSelect(processedFile);
   };
 
   const resetImage = () => {
@@ -233,7 +234,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
             size="lg"
             onClick={startCamera}
             className="w-full min-w-[110px]"
-            disabled={uploading}
+            disabled={setUploading}
           >
             <Camera className="w-5 h-5 mr-2" />
             카메라로 촬영하기
@@ -247,13 +248,13 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
               accept="image/jpeg,image/png,image/webp"
               onChange={handleFileSelect}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              disabled={uploading}
+              disabled={setUploading}
             />
             <Button
               variant="outline"
               size="lg"
               className="w-full min-w-[110px]"
-              disabled={uploading}
+              disabled={setUploading}
             >
               <Upload className="w-5 h-5 mr-2" />
               파일에서 선택하기
@@ -318,7 +319,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       )}
 
       {/* 업로드 중 상태 */}
-      {uploading && (
+      {setUploading && (
         <div className="text-center py-8">
           <div className="inline-flex items-center px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-full">
             <svg className="animate-spin w-5 h-5 text-blue-500 mr-3" fill="none" viewBox="0 0 24 24">
@@ -331,7 +332,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       )}
 
       {/* 이미지 미리보기 */}
-      {imagePreview && !uploading && (
+      {imagePreview && !setUploading && (
         <div className="space-y-4">
           <div className="relative group">
             <Image
