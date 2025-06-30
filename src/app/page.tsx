@@ -246,17 +246,11 @@ export default function Home() {
           </div>
 
           {/* Age Input */}
-          <div className="space-y-2 md:space-y-2">
-            <label className="flex items-center gap-2 text-base md:text-lg font-semibold text-gray-700 dark:text-gray-300">
-              <Calendar className="w-5 h-5 md:w-6 md:h-6" />
-              나이 입력
-            </label>
-            <AgeInput
-              value={age}
-              onChange={(v) => setAge(typeof v === 'number' ? v : '')}
-              className="w-full px-4 md:px-5 py-3 md:py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-200 text-lg md:text-xl"
-            />
-          </div>
+          <AgeInput
+            value={age}
+            onChange={(v) => setAge(typeof v === 'number' ? v : '')}
+            className="w-full px-4 md:px-5 py-3 md:py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-200 text-lg md:text-xl"
+          />
 
           {/* Image Upload */}
           <div className="space-y-2 md:space-y-2">
