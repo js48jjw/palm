@@ -49,30 +49,28 @@ export const AgeInput: React.FC<AgeInputProps> = ({
       }}
       autoComplete="off"
     >
-      <div className={className}>
-        <Input
-          type="number"
-          placeholder="예: 25"
-          value={value}
-          onChange={handleChange}
-          error={error}
-          min="1"
-          max="120"
-          inputMode="numeric"
-          enterKeyHint="done"
-          onKeyDown={(e) => {
-            if (
-              e.key === 'Enter' ||
-              e.key === 'Done' ||
-              e.key === 'Go' ||
-              e.key === 'Next' ||
-              e.key === 'Tab'
-            ) {
-              setTimeout(() => (e.target as HTMLInputElement).blur(), 0);
-            }
-          }}
-        />
-      </div>
+      <Input
+        type="number"
+        placeholder="예: 25"
+        value={value}
+        onChange={handleChange}
+        error={error}
+        min="1"
+        max="120"
+        inputMode="numeric"
+        enterKeyHint="done"
+        onKeyDown={(e) => {
+          if (
+            e.key === 'Enter' ||
+            e.key === 'Done' ||
+            e.key === 'Go' ||
+            e.key === 'Next' ||
+            e.key === 'Tab'
+          ) {
+            setTimeout(() => (e.target as HTMLInputElement).blur(), 0);
+          }
+        }}
+      />
     </form>
   );
 };
