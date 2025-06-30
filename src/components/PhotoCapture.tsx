@@ -73,7 +73,8 @@ async function resizeImageToBase64Max(file: File, maxBase64Size = 4 * 1024 * 102
   let blob = await resizeImage(file, maxWidth, maxHeight, quality);
   let tryCount = 0;
   let base64 = await fileToBase64(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }));
-  while (base64.length > maxBase64Size && tryCount < 7) {
+  // base64의 실제 바이트 크기 계산: base64.length * 3 / 4
+  while ((base64.length * 3 / 4) > maxBase64Size && tryCount < 10) {
     quality -= 0.2;
     if (quality < 0.3) {
       quality = 0.3;
@@ -151,10 +152,10 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
         }
         // base64 인코딩 후 크기 체크 및 반복 리사이즈
         let base64 = await fileToBase64(file);
-        if (base64.length > 4 * 1024 * 1024) {
+        if ((base64.length * 3 / 4) > 4 * 1024 * 1024) {
           file = await resizeImageToBase64Max(file, 4 * 1024 * 1024);
           base64 = await fileToBase64(file);
-          if (base64.length > 4 * 1024 * 1024) {
+          if ((base64.length * 3 / 4) > 4 * 1024 * 1024) {
             setError('이미지 인코딩 후 크기가 4MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
             return;
           }
@@ -194,11 +195,11 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
     }
     // base64 인코딩 후 크기 체크 및 반복 리사이즈
     let base64 = await fileToBase64(processedFile);
-    if (base64.length > 4 * 1024 * 1024) {
+    if ((base64.length * 3 / 4) > 4 * 1024 * 1024) {
       try {
         processedFile = await resizeImageToBase64Max(processedFile, 4 * 1024 * 1024);
         base64 = await fileToBase64(processedFile);
-        if (base64.length > 4 * 1024 * 1024) {
+        if ((base64.length * 3 / 4) > 4 * 1024 * 1024) {
           setError('이미지 인코딩 후 크기가 4MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
           return;
         }
