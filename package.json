@@ -10,8 +10,11 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.2.1",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
+    "@radix-ui/react-slot": "^1.2.3",
     "@tensorflow-models/body-pix": "^2.2.1",
     "@tensorflow/tfjs": "^4.22.0",
+    "class-variance-authority": "^0.7.1",
     "formidable": "^3.5.4",
     "lucide-react": "^0.263.1",
     "next": "^14.2.30",

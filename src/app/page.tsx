@@ -13,6 +13,7 @@ import { analyzePalm } from "../lib/gemini";
 import { fileToBase64 } from '../lib/utils';
 import { restoreAdfit } from '../lib/utils';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import ErrorModal from "../components/ui/ErrorModal";
 
 interface AnalysisResult {
   content: string;
@@ -29,6 +30,7 @@ export default function Home() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [currentStep, setCurrentStep] = useState<'input' | 'loading' | 'result'>('input');
   const [isMounted, setIsMounted] = useState(false);
+  const [errorModal, setErrorModal] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -68,12 +70,12 @@ export default function Home() {
 
     // 업로드 전 크기 이중 체크
     if (selectedImage.size > 3.9 * 1024 * 1024) {
-      alert('이미지 크기가 3.9MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
+      setErrorModal({ open: true, message: '이미지 크기가 3.9MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.' });
       return;
     }
     const base64Image = await fileToBase64(selectedImage);
     if (base64Image.length > 4 * 1024 * 1024) {
-      alert('이미지 인코딩 후 크기가 4MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.');
+      setErrorModal({ open: true, message: '이미지 인코딩 후 크기가 4MB를 초과합니다. 더 작은 이미지를 업로드해 주세요.' });
       return;
     }
 
@@ -99,11 +101,18 @@ export default function Home() {
         setAnalysisResult(result);
         setCurrentStep('result');
       } else {
-        throw new Error(result.error || '분석 중 오류가 발생했습니다.');
+        // 손금 사진이 아닐 때 서버에서 오는 메시지에 따라 안내
+        if (result.error && result.error.includes('손바닥(손금) 사진이 아닙니다')) {
+          setErrorModal({ open: true, message: '손금 사진을 올려주세요~' });
+        } else {
+          setErrorModal({ open: true, message: result.error || '분석 중 오류가 발생했습니다.' });
+        }
+        setCurrentStep('input');
+        return;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Analysis error:', error);
-      alert('분석 중 오류가 발생했습니다. 다시 시도해주세요.');
+      setErrorModal({ open: true, message: error.message || '분석 중 오류가 발생했습니다. 다시 시도해주세요.' });
       setCurrentStep('input');
     } finally {
       setIsAnalyzing(false);
@@ -154,6 +163,13 @@ export default function Home() {
   if (currentStep === 'result' && analysisResult) {
     return (
       <>
+        <ErrorModal
+          isOpen={errorModal.open}
+          onClose={() => setErrorModal({ open: false, message: '' })}
+          title="에러"
+          message={errorModal.message}
+          variant="error"
+        />
         {/* 결과화면 맨 위 광고 */}
         <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: 0 }}>
           <ins
