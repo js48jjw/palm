@@ -41,10 +41,37 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#a78bfa" />
         <style>{`.kakao_ad_area { display: block !important; }`}</style>
+        <style>{`
+          .promo-banner { display: none; }
+          @media (min-width: 1100px) {
+            .promo-banner { display: block; }
+          }
+        `}</style>
       </head>
       <body
         className={`${inter.variable} ${robotoMono.variable} antialiased`}
       >
+        {/* 좌측 홍보 배너 (폭 1100px 이상에서만 노출) */}
+        <a
+          href="https://pmioham9d3.sens.kr"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="promo-banner"
+          style={{
+            position: 'fixed',
+            left: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '160px',
+            zIndex: 99998,
+          }}
+        >
+          <img
+            src="/dbsense-banner.png"
+            alt="디비센스 홍보 배너"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+        </a>
         {/* 카카오 애드핏 광고 상단 (결과화면이 아닐 때만) */}
         {!isResultView && (
           <div style={{
