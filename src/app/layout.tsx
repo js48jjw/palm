@@ -42,7 +42,13 @@ export default function RootLayout({
         <meta name="theme-color" content="#a78bfa" />
         <style>{`.kakao_ad_area { display: block !important; }`}</style>
         <style>{`
-          .promo-banner, .promo-banner-right { display: none; }
+          .promo-banner, .promo-banner-right {
+            display: none;
+            transition: transform 0.3s ease;
+          }
+          .promo-banner:hover, .promo-banner-right:hover {
+            transform: translateY(-5px);
+          }
           @media (min-width: 1100px) {
             .promo-banner, .promo-banner-right { display: block; }
           }
@@ -81,7 +87,7 @@ export default function RootLayout({
           style={{
             position: 'fixed',
             left: 0,
-            top: 'calc(50% + 160px)',
+            top: 'calc(50% + 180px)',
             transform: 'translateY(-50%)',
             width: '160px',
             zIndex: 99998,
@@ -123,7 +129,7 @@ export default function RootLayout({
           style={{
             position: 'fixed',
             right: 0,
-            top: 'calc(50% + 160px)',
+            top: 'calc(50% + 180px)',
             transform: 'translateY(-50%)',
             width: '160px',
             zIndex: 99998,
