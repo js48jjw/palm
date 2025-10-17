@@ -72,6 +72,27 @@ export default function RootLayout({
             style={{ width: '100%', height: 'auto', display: 'block' }}
           />
         </a>
+        {/* 좌측 추가 홍보 배너 (폭 1100px 이상에서만 노출) */}
+        <a
+          href="https://ydztsbiml3.sens.kr"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="promo-banner"
+          style={{
+            position: 'fixed',
+            left: 0,
+            top: 'calc(50% + 160px)',
+            transform: 'translateY(-50%)',
+            width: '160px',
+            zIndex: 99998,
+          }}
+        >
+          <img
+            src="/chimhyang.png"
+            alt="침향 홍보 배너"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+        </a>
         {/* 우측 홍보 배너 (폭 1100px 이상에서만 노출) */}
         <a
           href="https://ig8rt9xz3i.sens.kr"
@@ -90,6 +111,27 @@ export default function RootLayout({
           <img
             src="/dbsense-banner-right.png"
             alt="디비센스 홍보 배너"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
+        </a>
+        {/* 우측 추가 홍보 배너 (폭 1100px 이상에서만 노출) */}
+        <a
+          href="https://ui7gwmf8ww.sens.kr"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="promo-banner-right"
+          style={{
+            position: 'fixed',
+            right: 0,
+            top: 'calc(50% + 160px)',
+            transform: 'translateY(-50%)',
+            width: '160px',
+            zIndex: 99998,
+          }}
+        >
+          <img
+            src="/magabogam.png"
+            alt="마가보감 홍보 배너"
             style={{ width: '100%', height: 'auto', display: 'block' }}
           />
         </a>
